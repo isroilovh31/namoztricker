@@ -3196,6 +3196,23 @@ body { -webkit-overflow-scrolling: touch; }
       <div class="hero-progress">
         <div class="hero-progress-bar" id="heroProgressBar" style="width:0%"></div>
       </div>
+      <!-- Sun times strip -->
+      <div style="display:flex;justify-content:center;gap:20px;margin-top:16px;padding-top:14px;border-top:0.5px solid rgba(255,255,255,0.07);">
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:3px;">🌅 SUNRISE</div>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,214,10,0.85);font-feature-settings:'tnum';" id="heroSunrise">--:--</div>
+        </div>
+        <div style="width:0.5px;background:rgba(255,255,255,0.1);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:3px;">📿 BUGUN</div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);font-feature-settings:'tnum';" id="heroDailyScore">0/5</div>
+        </div>
+        <div style="width:0.5px;background:rgba(255,255,255,0.1);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-bottom:3px;">🌇 SUNSET</div>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,150,50,0.85);font-feature-settings:'tnum';" id="heroSunset">--:--</div>
+        </div>
+      </div>
     </div>
 
     <!-- Prayer Cards -->
@@ -3403,6 +3420,16 @@ body { -webkit-overflow-scrolling: touch; }
   </section>
 
   <!-- PROFILE PAGE -->
+  <!-- ZIKR PAGE -->
+  <section class="page-section" id="zikrPage">
+    <div style="padding:20px 0 12px;">
+      <div style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">📿 Zikr</div>
+      <div style="font-size:13px;color:var(--text-muted);">Subhanalloh · Alhamdulillah · Allohu Akbar</div>
+    </div>
+    <!-- Zikr widget is rendered here by JS -->
+    <div id="zikrPageContent"></div>
+  </section>
+
   <section class="page-section" id="profilePage">
     <div style="padding: 24px 0 8px;">
       <div class="prayers-section-title">👤 PROFIL</div>
@@ -3800,10 +3827,16 @@ async function fetchPrayerTimes(lat, lng) {
         maghrib: t.Maghrib,
         isha:    t.Isha
       };
-      
+      // Update sunrise/sunset strip
+      const sunriseEl = document.getElementById('heroSunrise');
+      const sunsetEl  = document.getElementById('heroSunset');
+      if (sunriseEl && t.Sunrise) sunriseEl.textContent = t.Sunrise;
+      if (sunsetEl  && t.Sunset)  sunsetEl.textContent  = t.Sunset;
+
       localStorage.setItem('prayers_' + state.today, JSON.stringify(state.prayers));
       renderPrayerTimes();
       updateActivePrayer();
+      updateDailyScore();
       showToast('Namoz vaqtlari yangilandi ✓', 'success');
     }
   } catch (err) {
@@ -3816,6 +3849,14 @@ function loadFallbackTimes() {
   state.prayers = { fajr: '05:15', dhuhr: '13:00', asr: '16:45', maghrib: '19:30', isha: '21:00' };
   renderPrayerTimes();
   updateActivePrayer();
+  updateDailyScore();
+}
+
+function updateDailyScore() {
+  const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
+  const done = prayers.filter(p => state.statuses[p] && state.statuses[p] !== 'pending').length;
+  const el = document.getElementById('heroDailyScore');
+  if (el) el.textContent = done + '/5';
 }
 
 function renderPrayerTimes() {
@@ -3978,6 +4019,7 @@ function markPrayer(status) {
   renderWeekCalendar();
   renderQazaBalance();
   updateActivePrayer();
+  updateDailyScore();
 }
 
 function updateCardStatus(prayer, status) {
@@ -4633,7 +4675,6 @@ function toggleSetting(key, val) {
   const settings = JSON.parse(localStorage.getItem('app_settings') || '{}');
   settings[key] = val;
   localStorage.setItem('app_settings', JSON.stringify(settings));
-  // Sync toggle slider visuals
   const input = document.getElementById('toggle' + key.charAt(0).toUpperCase() + key.slice(1));
   if (input) {
     const slider = input.nextElementSibling;
@@ -4642,6 +4683,18 @@ function toggleSetting(key, val) {
     if (knob) knob.style.transform = val ? 'translateX(20px)' : 'translateX(0px)';
   }
   showToast(val ? '✅ Yoqildi' : '🔕 O\'chirildi', 'info');
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('Brauzer bildirishnomalarni qo\'llab-quvvatlamaydi', 'error'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      showToast('🔔 Bildirishnomalar yoqildi!', 'success');
+      document.getElementById('notifBtn').textContent = '🔔';
+    } else {
+      showToast('Bildirishnomalar rad etildi', 'info');
+    }
+  });
 }
 
 
