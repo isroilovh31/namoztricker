@@ -930,6 +930,123 @@ body::after {
   cursor: pointer;
   title: "Kod nusxalash";
 }
+
+/* ============================================================
+   RESPONSIVE — TELEFON MOSLASHUVI
+   ============================================================ */
+
+/* Umumiy kichik ekran */
+@media (max-width: 480px) {
+  .app-wrapper { padding: 0 12px 90px; }
+
+  /* Header */
+  .app-header { padding: 14px 0 12px; margin-bottom: 18px; }
+  .logo-arabic { font-size: 22px; }
+  .logo-title { font-size: 11px; letter-spacing: 1.5px; }
+  .icon-btn { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+
+  /* Date strip */
+  .date-strip { margin-bottom: 20px; }
+  .hijri-date { font-size: 15px; }
+  .gregorian-date { font-size: 12px; }
+
+  /* Hero card */
+  .next-prayer-hero { padding: 20px 16px; border-radius: 18px; margin-bottom: 20px; }
+  .hero-prayer-name { font-size: 24px; }
+  .hero-time { font-size: 38px; letter-spacing: -1px; }
+  .hero-countdown { font-size: 13px; }
+
+  /* Prayer cards */
+  .prayer-cards {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .prayer-card { padding: 12px 8px; border-radius: 14px; }
+  .card-icon { font-size: 18px; margin-bottom: 6px; }
+  .card-arabic { font-size: 13px; }
+  .card-name { font-size: 9px; margin-bottom: 6px; }
+  .card-time { font-size: 15px; margin-bottom: 8px; }
+  .card-status-badge { font-size: 9px; padding: 3px 7px; }
+
+  /* Stats cards */
+  .stats-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .stat-value { font-size: 22px; }
+  .stat-label { font-size: 9px; }
+  .stat-card { padding: 12px 10px; border-radius: 14px; }
+
+  /* Section title */
+  .prayers-section-title { font-size: 10px; }
+
+  /* Bottom nav */
+  .bottom-nav { padding: 0 12px 12px; }
+  .bottom-nav-inner { padding: 10px 8px; border-radius: 20px; }
+  .nav-btn { padding: 6px 10px; font-size: 10px; gap: 3px; }
+  .nav-btn .nav-icon { font-size: 20px; }
+
+  /* Auth overlay */
+  .auth-card { padding: 24px 18px; margin: 16px; border-radius: 20px; }
+  .auth-title { font-size: 22px; }
+  .auth-input { font-size: 15px; padding: 12px 14px; }
+  .auth-btn { padding: 14px; font-size: 15px; }
+  .code-box { width: 46px; height: 54px; font-size: 22px; }
+
+  /* Modals */
+  .status-modal { padding: 18px 14px; border-radius: 20px 20px 16px 16px; }
+  .modal-title { font-size: 17px; margin-bottom: 14px; }
+  .status-option { padding: 12px 14px; font-size: 13px; }
+
+  /* Analytics */
+  .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .contribution-graph { padding: 14px; }
+  .graph-legend { flex-wrap: wrap; gap: 6px; }
+  .legend-item { font-size: 10px; }
+
+  /* Qaza grid */
+  .qaza-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px; }
+  .qaza-item { padding: 10px 8px; border-radius: 12px; }
+  .qaza-item-name { font-size: 9px; }
+  .qaza-item-count { font-size: 20px; }
+  .qaza-recover-btn { font-size: 10px; padding: 4px 8px; }
+
+  /* Weekly status */
+  .weekly-status { font-size: 12px; padding: 10px 14px; }
+}
+
+/* Juda kichik ekranlar (360px va kichik) */
+@media (max-width: 360px) {
+  .prayer-cards { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-time { font-size: 32px; }
+  .hero-prayer-name { font-size: 20px; }
+  .nav-btn { padding: 6px 6px; font-size: 9px; }
+  .stats-cards { grid-template-columns: repeat(2, 1fr) !important; }
+  .code-box { width: 40px; height: 48px; font-size: 20px; }
+}
+
+/* O'rta ekranlar (planshet) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-wrapper { padding: 0 20px 100px; }
+  .hero-time { font-size: 46px; }
+  .prayer-cards { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .stats-cards { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Touch-friendly minimum sizes */
+button, .status-option, .nav-btn, .period-tab, .icon-btn {
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn { min-height: 52px; }
+.icon-btn { min-height: 40px; min-width: 40px; }
+.status-option { min-height: 48px; }
+
+/* Scroll on mobile */
+body { -webkit-overflow-scrolling: touch; }
+.app-wrapper { overflow-x: hidden; }
+
+/* Safe area (iPhone notch) */
+.bottom-nav { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 </style>
 </head>
 <body>
@@ -945,6 +1062,48 @@ body::after {
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- Status Modal -->
+<!-- SETTINGS MODAL -->
+<div class="status-modal-overlay" id="settingsModal">
+  <div class="status-modal" style="max-width:460px;">
+    <div class="modal-title">⚙️ Sozlamalar</div>
+
+    <!-- Hisob ma'lumotlari -->
+    <div style="background:var(--bg-raised);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">👤 Hisob</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:600;font-size:14px;" id="settingsUserName">—</div>
+          <div style="font-size:12px;color:var(--text-muted);">Kod: <span id="settingsUserCode" style="color:var(--gold);font-weight:700;">·····</span></div>
+        </div>
+        <button onclick="copyCode()" style="padding:6px 14px;border-radius:10px;border:1px solid var(--gold-glow);background:var(--gold-dim);color:var(--gold);cursor:pointer;font-size:12px;">Nusxala</button>
+      </div>
+    </div>
+
+    <!-- Tema -->
+    <div style="background:var(--bg-raised);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">🎨 Ko'rinish</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="setTheme('dark')" id="settingsDarkBtn" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--gold);background:var(--gold-dim);color:var(--gold);cursor:pointer;font-size:13px;font-weight:600;">🌙 Qoʻngʻir</button>
+        <button onclick="setTheme('light')" id="settingsLightBtn" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-secondary);cursor:pointer;font-size:13px;">☀️ Kunduzgi</button>
+      </div>
+    </div>
+
+    <!-- Lokatsiya -->
+    <div style="background:var(--bg-raised);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">📍 Joylashuv</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;" id="settingsLocation">Aniqlanmagan</div>
+      <button onclick="requestLocation();closeSettingsModal();" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--teal-dim);background:var(--teal-dim);color:var(--teal);cursor:pointer;font-size:13px;font-weight:600;">🔄 Joylashuvni yangilash</button>
+    </div>
+
+    <!-- Hisobdan chiqish -->
+    <div style="background:var(--bg-raised);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <button onclick="logoutUser()" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(239,68,68,0.3);background:var(--red-dim);color:var(--red);cursor:pointer;font-size:13px;font-weight:600;">🚪 Hisobdan chiqish</button>
+    </div>
+
+    <div class="status-option cancel" onclick="closeSettingsModal()">✕ Yopish</div>
+  </div>
+</div>
+
 <div class="status-modal-overlay" id="statusModal">
   <div class="status-modal">
     <div class="modal-title" id="modalPrayerName">Bomdod Namozi</div>
@@ -1040,7 +1199,7 @@ body::after {
     </div>
     <div class="header-actions">
       <button class="icon-btn" onclick="toggleTheme()" title="Tema">🌙</button>
-      <button class="icon-btn" title="Sozlamalar">⚙️</button>
+      <button class="icon-btn" onclick="openSettingsModal()" title="Sozlamalar">⚙️</button>
     </div>
   </header>
 
@@ -1170,7 +1329,7 @@ body::after {
         <div style="font-weight:700;font-size:15px;">⚠️ Jami qarzdorlik</div>
         <div id="qazaPageTotalBadge" style="padding:4px 14px;border-radius:20px;background:var(--red-dim);color:var(--red);font-size:13px;font-weight:700;">0 ta</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="qazaPageGrid">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="qazaPageGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
         <div class="qaza-item empty" id="qazapage-fajr">
           <div class="qaza-item-name">Bomdod</div>
           <div class="qaza-item-count">0</div>
@@ -1225,8 +1384,8 @@ body::after {
     <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:20px;margin-bottom:16px;">
       <div style="font-weight:600;margin-bottom:14px;font-size:14px;">🎨 Ko'rinish</div>
       <div style="display:flex;gap:10px;">
-        <button onclick="setTheme('dark')" id="themeBtnDark" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;">🌙 Qoʻngʻir</button>
-        <button onclick="setTheme('light')" id="themeBtnLight" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;">☀️ Kunduzgi</button>
+        <button onclick="setTheme('dark')" id="themeBtnDark" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;min-height:44px;">🌙 Qoʻngʻir</button>
+        <button onclick="setTheme('light')" id="themeBtnLight" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;min-height:44px;">☀️ Kunduzgi</button>
       </div>
     </div>
 
@@ -1245,9 +1404,10 @@ body::after {
 
   <!-- ANALYTICS PAGE -->
   <section class="page-section" id="analyticsPage">
-
     <div class="analytics-section">
-      <div class="section-header">
+
+      <!-- Sarlavha + period tabs -->
+      <div class="section-header" style="margin-bottom:20px;">
         <div class="section-title">📊 Statistika</div>
         <div class="period-tabs">
           <button class="period-tab active" onclick="setPeriod('week', this)">Hafta</button>
@@ -1255,43 +1415,74 @@ body::after {
         </div>
       </div>
 
-      <!-- Contribution Graph -->
-      <div class="contribution-graph">
-        <div id="contributionGraph"></div>
-        <div class="graph-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.7)"></div>A'lo (5/5)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.35)"></div>Yaxshi</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,0.35)"></div>Yomon</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.5)"></div>O'qilmadi</div>
-        </div>
+      <!-- Haftalik baho banner -->
+      <div class="weekly-status excellent" id="weeklyStatusBadge" style="margin-bottom:16px;">
+        ⭐ Haftalik baho: A'lo daraja
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-cards">
-        <div class="stat-card highlight">
+      <!-- 4 ta asosiy karta -->
+      <div class="stats-cards" style="margin-bottom:16px;">
+        <div class="stat-card highlight" title="Jami o'qilgan / jami bo'lishi kerak bo'lgan namozlar nisbati">
           <div class="stat-value" id="stat-completion">0%</div>
-          <div class="stat-label">Bajarish darajasi</div>
+          <div class="stat-label">Bajarish</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" title="5/5 namoz o'qilgan kunlar soni">
           <div class="stat-value" id="stat-perfect">0</div>
-          <div class="stat-label">Mukammal kunlar</div>
+          <div class="stat-label">Mukammal kun</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" title="Jamoat bilan o'qilgan namozlar soni">
           <div class="stat-value" id="stat-jamaat">0</div>
           <div class="stat-label">Jamoat</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" title="Ketma-ket mukammal yoki yaxshi kunlar">
           <div class="stat-value" id="stat-streak">0</div>
-          <div class="stat-label">Ketma-ket kun</div>
+          <div class="stat-label">Streak 🔥</div>
         </div>
       </div>
 
-      <!-- Weekly Status -->
-      <div class="weekly-status excellent" id="weeklyStatusBadge">
-        ⭐ Haftalik baho: A'lo daraja
+      <!-- Qo'shimcha statistika -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📈 O'qilgan</div>
+          <div style="font-size:26px;font-weight:700;color:var(--green);" id="stat-total-done">0</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">jami namoz</div>
+        </div>
+        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">❌ O'tkazilgan</div>
+          <div style="font-size:26px;font-weight:700;color:var(--red);" id="stat-total-missed">0</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">jami namoz</div>
+        </div>
+        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">⏰ Qazo</div>
+          <div style="font-size:26px;font-weight:700;color:var(--amber);" id="stat-total-qaza">0</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">qazo o'qildi</div>
+        </div>
+        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">🙏 Yolg'iz</div>
+          <div style="font-size:26px;font-weight:700;color:var(--blue);" id="stat-total-alone">0</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">yolg'iz o'qildi</div>
+        </div>
       </div>
-    </div>
 
+      <!-- Har bir namoz bo'yicha progress -->
+      <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;">🕌 Har bir namoz holati</div>
+        <div id="prayerBreakdown"></div>
+      </div>
+
+      <!-- Grafik -->
+      <div class="contribution-graph" style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">📅 Kunlik grafik</div>
+        <div id="contributionGraph"></div>
+        <div class="graph-legend" style="margin-top:10px;">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.8)"></div>A'lo (5/5)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.4)"></div>Yaxshi (4/5)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,0.5)"></div>Yomon (1-3)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.5)"></div>O'qilmadi (0)</div>
+        </div>
+      </div>
+
+    </div>
   </section>
 
 </div>
@@ -1468,7 +1659,8 @@ async function requestLocation() {
         showToast('Joylashuv aniqlashda xato. Toshkent vaqtlari ishlatilmoqda', 'info');
         loadFallbackTimes();
       }
-    }
+    },
+    { timeout: 10000, enableHighAccuracy: true, maximumAge: 300000 }
   );
 }
 
@@ -1603,6 +1795,18 @@ function updateActivePrayer() {
 // PRAYER STATUS MODAL
 // ============================================================
 function openModal(prayer) {
+  // Vaqti kelmagan namozni bloklash
+  const prayerTime = state.prayers[prayer];
+  if (prayerTime) {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const [h, m] = prayerTime.split(':').map(Number);
+    const prayerMin = h * 60 + m;
+    if (prayerMin > nowMin) {
+      showToast('⏰ Bu namoz vaqti hali kelmagan!', 'info');
+      return;
+    }
+  }
   state.currentModal = prayer;
   const info = PRAYER_NAMES[prayer];
   document.getElementById('modalPrayerName').textContent = `${info.icon} ${info.uz} · ${info.ar}`;
@@ -1616,6 +1820,9 @@ function closeModal() {
 
 document.getElementById('statusModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
+});
+document.getElementById('settingsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSettingsModal();
 });
 
 function markPrayer(status) {
@@ -1761,10 +1968,20 @@ function generateMockAnalytics() {
   const today = new Date();
   const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
+  // Foydalanuvchi kirgan kundan boshlab hisoblash
+  const joinDate = state.user?.createdAt ? new Date(state.user.createdAt) : new Date();
+  joinDate.setHours(0,0,0,0);
+
   for (let i = 29; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
+
+    // Kirgan kundan oldingi kunlarni ko'rsatmaslik
+    if (d < joinDate) {
+      data.push({ date: dateStr, score: 'none', completed_count: 0, missed_count: 0, jamaat_count: 0 });
+      continue;
+    }
 
     let completed = 0, missed = 0, jamaat = 0;
     const saved = localStorage.getItem('status_' + dateStr);
@@ -1792,38 +2009,103 @@ function generateMockAnalytics() {
 }
 
 function updateStatsCards(data) {
-  const total = data.reduce((a, b) => a + b.completed_count, 0);
-  const possible = data.length * 5;
-  const pct = possible > 0 ? Math.round(total / possible * 100) : 0;
-  const perfect = data.filter(d => d.score === 'excellent').length;
-  
+  const activeDays = data.filter(d => d.score !== 'none');
+  const totalDone = activeDays.reduce((a, b) => a + b.completed_count, 0);
+  const totalMissed = activeDays.reduce((a, b) => a + b.missed_count, 0);
+  const totalJamaat = activeDays.reduce((a, b) => a + (b.jamaat_count || 0), 0);
+  const possible = activeDays.length * 5;
+  const pct = possible > 0 ? Math.round(totalDone / possible * 100) : 0;
+  const perfect = activeDays.filter(d => d.score === 'excellent').length;
+
   document.getElementById('stat-completion').textContent = pct + '%';
   document.getElementById('stat-perfect').textContent = perfect;
-  document.getElementById('stat-jamaat').textContent = data.reduce((a, b) => a + (b.jamaat_count || 0), 0);
-  
-  // Streak
+  document.getElementById('stat-jamaat').textContent = totalJamaat;
+
   let streak = 0;
   for (let i = data.length - 1; i >= 0; i--) {
+    if (data[i].score === 'none') continue;
     if (data[i].score === 'excellent' || data[i].score === 'good') streak++;
     else break;
   }
   document.getElementById('stat-streak').textContent = streak;
-  
-  // Weekly status
-  const recent = data.slice(-7);
-  const recentPct = recent.reduce((a, b) => a + b.completed_count, 0) / (recent.length * 5);
+
+  const elDone = document.getElementById('stat-total-done');
+  const elMissed = document.getElementById('stat-total-missed');
+  if (elDone) elDone.textContent = totalDone;
+  if (elMissed) elMissed.textContent = totalMissed;
+
+  // Qazo va yolg'iz hisoblash localStorage dan
+  let totalQaza = 0, totalAlone = 0;
+  const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
+  activeDays.forEach(d => {
+    const saved = localStorage.getItem('status_' + d.date);
+    if (saved) {
+      const st = JSON.parse(saved);
+      prayers.forEach(p => {
+        if (st[p] === 'completed_qaza') totalQaza++;
+        if (st[p] === 'completed_alone') totalAlone++;
+      });
+    }
+  });
+  const elQaza = document.getElementById('stat-total-qaza');
+  const elAlone = document.getElementById('stat-total-alone');
+  if (elQaza) elQaza.textContent = totalQaza;
+  if (elAlone) elAlone.textContent = totalAlone;
+
+  renderPrayerBreakdown(activeDays);
+
+  const recent = activeDays.slice(-7);
+  const recentPct = recent.length > 0 ? recent.reduce((a, b) => a + b.completed_count, 0) / (recent.length * 5) : 0;
   const statusEl = document.getElementById('weeklyStatusBadge');
   statusEl.className = 'weekly-status';
   if (recentPct >= 0.95) {
     statusEl.classList.add('excellent');
-    statusEl.textContent = '⭐ Haftalik baho: A\'lo daraja';
+    statusEl.textContent = "⭐ Haftalik baho: A'lo daraja — 5/5 namoz!";
   } else if (recentPct >= 0.7) {
     statusEl.classList.add('good');
-    statusEl.textContent = '✅ Haftalik baho: Yaxshi';
+    statusEl.textContent = "✅ Haftalik baho: Yaxshi — davom eting!";
+  } else if (recentPct > 0) {
+    statusEl.classList.add('poor');
+    statusEl.textContent = "⚠️ Haftalik baho: Yaxshilash kerak";
   } else {
     statusEl.classList.add('poor');
-    statusEl.textContent = '⚠️ Haftalik baho: Yaxshilash kerak';
+    statusEl.textContent = "🕌 Namozlarni belgilashni boshlang!";
   }
+}
+
+function renderPrayerBreakdown(activeDays) {
+  const el = document.getElementById('prayerBreakdown');
+  if (!el) return;
+  const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
+  const labels = { fajr:'🌅 Bomdod', dhuhr:'☀️ Peshin', asr:'🌤️ Asr', maghrib:'🌆 Shom', isha:'🌙 Xufton' };
+  const total = activeDays.length;
+
+  el.innerHTML = prayers.map(p => {
+    let done = 0, missed = 0;
+    activeDays.forEach(d => {
+      const saved = localStorage.getItem('status_' + d.date);
+      if (saved) {
+        const st = JSON.parse(saved);
+        const s = st[p];
+        if (s && s !== 'pending') {
+          if (s === 'missed') missed++;
+          else done++;
+        }
+      }
+    });
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    const barColor = pct >= 90 ? 'var(--green)' : pct >= 60 ? 'var(--teal)' : pct >= 30 ? 'var(--amber)' : 'var(--red)';
+    const emoji = pct >= 90 ? '✅' : pct >= 60 ? '🔶' : pct >= 30 ? '⚠️' : '❌';
+    return '<div style="margin-bottom:14px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">' +
+        '<span style="font-size:13px;font-weight:600;">' + labels[p] + '</span>' +
+        '<span style="font-size:12px;color:var(--text-muted);">' + emoji + ' ' + done + '/' + total + ' kun &nbsp;·&nbsp; ' + pct + '%</span>' +
+      '</div>' +
+      '<div style="height:7px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">' +
+        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;transition:width 0.6s ease;"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
 function renderContributionGraph(period = 'week') {
@@ -1949,6 +2231,28 @@ function setTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem('theme', t);
   renderProfilePage();
+}
+
+function openSettingsModal() {
+  // Ma'lumotlarni to'ldirish
+  if (state.user) {
+    document.getElementById('settingsUserName').textContent = state.user.name;
+    document.getElementById('settingsUserCode').textContent = state.user.code;
+  }
+  document.getElementById('settingsLocation').textContent = state.location?.city || 'Aniqlanmagan';
+  // Faol tema
+  const isDark = state.theme !== 'light';
+  document.getElementById('settingsDarkBtn').style.borderColor = isDark ? 'var(--gold)' : 'var(--glass-border)';
+  document.getElementById('settingsDarkBtn').style.background = isDark ? 'var(--gold-dim)' : 'var(--bg-raised)';
+  document.getElementById('settingsDarkBtn').style.color = isDark ? 'var(--gold)' : 'var(--text-secondary)';
+  document.getElementById('settingsLightBtn').style.borderColor = !isDark ? 'var(--gold)' : 'var(--glass-border)';
+  document.getElementById('settingsLightBtn').style.background = !isDark ? 'var(--gold-dim)' : 'var(--bg-raised)';
+  document.getElementById('settingsLightBtn').style.color = !isDark ? 'var(--gold)' : 'var(--text-secondary)';
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function closeSettingsModal() {
+  document.getElementById('settingsModal').classList.remove('open');
 }
 
 function logoutUser() {
