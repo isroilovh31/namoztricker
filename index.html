@@ -965,6 +965,10 @@ body::after {
         <span class="dot" style="background:var(--amber)"></span>
         ⏰ Kechikib (qazo) o'qildi
       </div>
+      <div class="status-option" onclick="markPrayer('missed')">
+        <span class="dot" style="background:var(--red)"></span>
+        ❌ O'qilmadi (o'tkazib yuborildi)
+      </div>
       <div class="status-option" onclick="markPrayer('pending')">
         <span class="dot" style="background:var(--text-muted)"></span>
         ↩️ Bekor qilish
@@ -1154,6 +1158,89 @@ body::after {
       </div>
     </div>
 
+  </section>
+
+  <!-- QAZO PAGE -->
+  <section class="page-section" id="qazaPage">
+    <div style="padding: 24px 0 8px;">
+      <div class="prayers-section-title">🔄 QAZO BALANSI</div>
+    </div>
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:24px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-weight:700;font-size:15px;">⚠️ Jami qarzdorlik</div>
+        <div id="qazaPageTotalBadge" style="padding:4px 14px;border-radius:20px;background:var(--red-dim);color:var(--red);font-size:13px;font-weight:700;">0 ta</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;" id="qazaPageGrid">
+        <div class="qaza-item empty" id="qazapage-fajr">
+          <div class="qaza-item-name">Bomdod</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('fajr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qazapage-dhuhr">
+          <div class="qaza-item-name">Peshin</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('dhuhr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qazapage-asr">
+          <div class="qaza-item-name">Asr</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('asr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qazapage-maghrib">
+          <div class="qaza-item-name">Shom</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('maghrib')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qazapage-isha">
+          <div class="qaza-item-name">Xufton</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('isha')">Tikla</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:20px;">
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        <div style="margin-bottom:8px;font-weight:600;color:var(--gold);">📖 Qazo haqida</div>
+        O'qilmagan namozlarni imkon qadar tez qazosini o'qish sunnat hisoblanadi. Har kuni bir oz qazo o'qib, qarzdan chiqishga harakat qiling.
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE PAGE -->
+  <section class="page-section" id="profilePage">
+    <div style="padding: 24px 0 8px;">
+      <div class="prayers-section-title">👤 PROFIL</div>
+    </div>
+
+    <!-- User info card -->
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:28px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">🤲</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:6px;" id="profileName">—</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Foydalanuvchi kodi</div>
+      <div onclick="copyCode()" style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:var(--gold-dim);border:1px solid var(--gold-glow);border-radius:14px;cursor:pointer;font-size:20px;font-weight:700;letter-spacing:4px;color:var(--gold);" id="profileCode">·····</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">Bosib nusxalash</div>
+    </div>
+
+    <!-- Tema -->
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:20px;margin-bottom:16px;">
+      <div style="font-weight:600;margin-bottom:14px;font-size:14px;">🎨 Ko'rinish</div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="setTheme('dark')" id="themeBtnDark" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;">🌙 Qoʻngʻir</button>
+        <button onclick="setTheme('light')" id="themeBtnLight" style="flex:1;padding:10px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--text-primary);cursor:pointer;font-size:13px;transition:all 0.2s;">☀️ Kunduzgi</button>
+      </div>
+    </div>
+
+    <!-- Lokatsiya -->
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:20px;padding:20px;margin-bottom:16px;">
+      <div style="font-weight:600;margin-bottom:14px;font-size:14px;">📍 Joylashuv</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="profileLocation">Aniqlanmagan</div>
+      <button onclick="requestLocation()" style="width:100%;padding:11px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-raised);color:var(--teal);cursor:pointer;font-size:13px;font-weight:600;">🔄 Joylashuvni yangilash</button>
+    </div>
+
+    <!-- Chiqish -->
+    <div style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);border:1px solid rgba(239,68,68,0.2);border-radius:20px;padding:20px;">
+      <button onclick="logoutUser()" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(239,68,68,0.3);background:var(--red-dim);color:var(--red);cursor:pointer;font-size:14px;font-weight:600;">🚪 Hisobdan chiqish</button>
+    </div>
   </section>
 
   <!-- ANALYTICS PAGE -->
@@ -1672,23 +1759,34 @@ function recoverQaza(prayer) {
 function generateMockAnalytics() {
   const data = [];
   const today = new Date();
-  
+  const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
   for (let i = 29; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
-    
-    const rand = Math.random();
+
+    let completed = 0, missed = 0, jamaat = 0;
+    const saved = localStorage.getItem('status_' + dateStr);
+    if (saved) {
+      const statuses = JSON.parse(saved);
+      prayers.forEach(p => {
+        const s = statuses[p];
+        if (s && s !== 'pending') {
+          if (s === 'missed') missed++;
+          else { completed++; if (s === 'completed_jamaat') jamaat++; }
+        }
+      });
+    }
+
     let score = 'failed';
-    if (rand > 0.85) score = 'excellent';
-    else if (rand > 0.6)  score = 'good';
-    else if (rand > 0.35) score = 'poor';
-    
-    const completed = score === 'excellent' ? 5 : score === 'good' ? 4 : score === 'poor' ? 2 : 0;
-    
-    data.push({ date: dateStr, score, completed_count: completed, missed_count: 5 - completed });
+    if (completed === 5) score = 'excellent';
+    else if (completed >= 4) score = 'good';
+    else if (completed >= 2) score = 'poor';
+
+    data.push({ date: dateStr, score, completed_count: completed, missed_count: missed, jamaat_count: jamaat });
   }
-  
+
   state.analyticsData = data;
   updateStatsCards(data);
 }
@@ -1701,7 +1799,7 @@ function updateStatsCards(data) {
   
   document.getElementById('stat-completion').textContent = pct + '%';
   document.getElementById('stat-perfect').textContent = perfect;
-  document.getElementById('stat-jamaat').textContent = Math.floor(total * 0.4);
+  document.getElementById('stat-jamaat').textContent = data.reduce((a, b) => a + (b.jamaat_count || 0), 0);
   
   // Streak
   let streak = 0;
@@ -1785,7 +1883,7 @@ function setPeriod(period, btn) {
 function showPage(page) {
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  
+
   if (page === 'home') {
     document.getElementById('homePage').classList.add('active');
     document.getElementById('navHome').classList.add('active');
@@ -1793,7 +1891,73 @@ function showPage(page) {
     document.getElementById('analyticsPage').classList.add('active');
     document.getElementById('navAnalytics').classList.add('active');
     renderContributionGraph();
+  } else if (page === 'qaza') {
+    document.getElementById('qazaPage').classList.add('active');
+    document.getElementById('navQaza').classList.add('active');
+    renderQazaPage();
+  } else if (page === 'profile') {
+    document.getElementById('profilePage').classList.add('active');
+    document.getElementById('navProfile').classList.add('active');
+    renderProfilePage();
   }
+}
+
+function renderQazaPage() {
+  const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  let total = 0;
+  prayers.forEach(p => {
+    const count = state.qaza[p] || 0;
+    total += count;
+    const item = document.getElementById('qazapage-' + p);
+    if (!item) return;
+    item.querySelector('.qaza-item-count').textContent = count;
+    item.classList.toggle('empty', count === 0);
+  });
+  const badge = document.getElementById('qazaPageTotalBadge');
+  if (badge) badge.textContent = total + ' ta';
+}
+
+function renderProfilePage() {
+  const nameEl = document.getElementById('profileName');
+  const codeEl = document.getElementById('profileCode');
+  const locEl = document.getElementById('profileLocation');
+  if (state.user) {
+    if (nameEl) nameEl.textContent = state.user.name;
+    if (codeEl) codeEl.textContent = state.user.code;
+  }
+  if (locEl) locEl.textContent = state.location?.city || 'Aniqlanmagan';
+  // Faol tema tugmasini belgilash
+  const dark = document.getElementById('themeBtnDark');
+  const light = document.getElementById('themeBtnLight');
+  if (dark && light) {
+    if (state.theme === 'dark') {
+      dark.style.borderColor = 'var(--gold)';
+      dark.style.color = 'var(--gold)';
+      light.style.borderColor = 'var(--glass-border)';
+      light.style.color = 'var(--text-primary)';
+    } else {
+      light.style.borderColor = 'var(--gold)';
+      light.style.color = 'var(--gold)';
+      dark.style.borderColor = 'var(--glass-border)';
+      dark.style.color = 'var(--text-primary)';
+    }
+  }
+}
+
+function setTheme(t) {
+  state.theme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  renderProfilePage();
+}
+
+function logoutUser() {
+  if (!confirm('Hisobdan chiqmoqchimisiz?')) return;
+  localStorage.removeItem('namoz_user');
+  localStorage.removeItem('qaza_balance');
+  state.user = null;
+  document.getElementById('authOverlay').classList.remove('hidden');
+  showPage('home');
 }
 
 // ============================================================
