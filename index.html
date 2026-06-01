@@ -1338,6 +1338,358 @@ body { -webkit-overflow-scrolling: touch; }
 
 /* Safe area (iPhone notch) */
 .bottom-nav { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+/* ============================================================
+   HAFTALIK KALENDAR
+   ============================================================ */
+.week-calendar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 18px;
+  margin-bottom: 18px;
+  position: relative;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+.week-calendar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--arch-accent), transparent);
+}
+.week-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.week-cal-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.wc-icon { font-size: 15px; }
+.week-cal-streak {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-dim);
+  border: 1px solid rgba(201,152,64,0.2);
+  border-radius: 3px;
+  padding: 4px 10px;
+}
+.week-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.wcd-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: default;
+}
+.wcd-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.wcd-ball {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: 'Courier New', monospace;
+  background: var(--bg-raised);
+  border: 1px solid var(--arch-line);
+  transition: transform 0.2s;
+  position: relative;
+}
+.wcd-ball:hover { transform: scale(1.08); }
+.wcd-ball.today {
+  box-shadow: 0 0 0 2px var(--gold);
+  border-color: var(--gold);
+}
+.wcd-ball.future { opacity: 0.3; }
+.wcd-ball.before-join { opacity: 0.12; }
+.wcd-ball.score-5 { background: rgba(93,184,122,0.7); color: #fff; border-color: transparent; }
+.wcd-ball.score-4 { background: rgba(93,184,122,0.32); color: var(--green); border-color: rgba(93,184,122,0.2); }
+.wcd-ball.score-1-3 { background: rgba(201,152,64,0.35); color: var(--amber); border-color: rgba(201,152,64,0.2); }
+.wcd-ball.score-0 { background: rgba(192,85,74,0.4); color: var(--red); border-color: rgba(192,85,74,0.2); }
+.wcd-count { font-size: 8px; color: var(--text-muted); font-weight: 600; }
+.week-cal-legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--arch-line);
+}
+.wc-leg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.wc-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   ZIKR WIDGET
+   ============================================================ */
+.zikr-widget {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 18px;
+  animation: fadeUp 0.7s ease 0.3s both;
+  position: relative;
+}
+.zikr-widget::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--arch-accent), transparent);
+}
+.zikr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.zikr-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.zikr-target-wrap { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); }
+.zikr-target-sel {
+  background: var(--bg-raised);
+  border: 1px solid var(--arch-line);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+.zikr-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.zikr-ring-wrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+.zikr-ring { width: 110px; height: 110px; }
+.zikr-count-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.zikr-count {
+  font-size: 28px;
+  font-weight: 900;
+  font-family: 'Courier New', monospace;
+  color: var(--gold);
+  line-height: 1;
+}
+.zikr-denom { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.zikr-phrases { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.zikr-phrase-item {
+  padding: 8px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--arch-line);
+  background: var(--bg-raised);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.zikr-phrase-item:hover { border-color: var(--gold-glow); }
+.zikr-phrase-item.active { border-color: var(--gold-glow); background: var(--gold-dim); }
+.zpi-ar { font-family: var(--font-arabic); font-size: 14px; color: var(--gold); line-height: 1.4; }
+.zpi-uz { font-size: 9px; color: var(--text-muted); letter-spacing: 0.5px; margin-top: 2px; text-transform: uppercase; font-weight: 700; }
+.zikr-btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 3px;
+  border: 1px solid var(--gold-glow);
+  background: var(--gold-dim);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s;
+  font-family: var(--font-ui);
+  margin-bottom: 8px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.zikr-btn:active { transform: scale(0.97); background: rgba(200,168,75,0.22); }
+.zikr-btn-ar { font-family: var(--font-arabic); font-size: 20px; color: var(--gold); }
+.zikr-btn-uz { font-size: 9px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; }
+.zikr-reset {
+  width: 100%;
+  padding: 9px;
+  border-radius: 3px;
+  border: 1px solid var(--arch-line);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.zikr-reset:hover { border-color: var(--red); color: var(--red); }
+.zikr-done-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(93,184,122,0.12);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.zikr-done-overlay.show { opacity: 1; }
+
+/* ============================================================
+   ANALYTICS — YANGI BLOKLAR
+   ============================================================ */
+.stat-block {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 18px;
+  position: relative;
+  animation: fadeUp 0.5s ease both;
+}
+.stat-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--arch-accent), transparent);
+}
+.stat-block-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.stat-block-icon { font-size: 15px; }
+.stat-block-sub {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Bar chart */
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.bar-fill {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  min-height: 3px;
+  transition: height 0.5s ease;
+  position: relative;
+}
+.bar-fill:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-raised);
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  z-index: 10;
+  font-family: var(--font-ui);
+}
+.bar-label-row {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.bar-day { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.bar-day.today { color: var(--gold); }
+.bar-num { font-size: 9px; color: var(--text-muted); font-family: 'Courier New', monospace; }
+
+/* Mini stat cards */
+.mini-stat-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--arch-line);
+  border-radius: 4px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+.msc-icon { font-size: 20px; }
+.msc-val { font-size: 26px; font-weight: 800; font-family: 'Courier New', monospace; line-height: 1; }
+.msc-label { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+
+/* Matrix grid */
+.matrix-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  cursor: default;
+  position: relative;
+  transition: transform 0.15s;
+}
+.matrix-cell:hover { transform: scale(1.2); z-index: 5; }
 </style>
 </head>
 <body>
@@ -1578,6 +1930,81 @@ body { -webkit-overflow-scrolling: touch; }
 
     </div>
 
+    <!-- ══════════════════════════════
+         HAFTALIK KALENDAR
+         ══════════════════════════════ -->
+    <div class="week-calendar" id="weekCalendar">
+      <div class="week-cal-header">
+        <div class="week-cal-title">
+          <span class="wc-icon">📅</span> Haftalik ko'rinish
+        </div>
+        <div class="week-cal-streak" id="calStreak">
+          <span>🔥</span><span id="calStreakNum">0</span> kun streak
+        </div>
+      </div>
+      <div class="week-cal-days" id="weekCalDays"></div>
+      <div class="week-cal-legend">
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--green)"></span>5/5</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:rgba(93,184,122,0.45)"></span>4/5</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--amber)"></span>1–3</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--red)"></span>0/5</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--bg-raised);border:1px solid var(--arch-line)"></span>Kelmagan</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         ZIKR HISOBLAGICH
+         ══════════════════════════════ -->
+    <div class="zikr-widget" id="zikrWidget">
+      <div class="zikr-header">
+        <div class="zikr-title">📿 Zikr hisoblagich</div>
+        <div class="zikr-target-wrap">
+          <span class="zikr-target-label">Maqsad:</span>
+          <select class="zikr-target-sel" id="zikrTargetSel" onchange="setZikrTarget(this.value)">
+            <option value="33">33</option>
+            <option value="99" selected>99</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+        </div>
+      </div>
+      <div class="zikr-display">
+        <div class="zikr-ring-wrap">
+          <svg class="zikr-ring" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--arch-line)" stroke-width="8"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--gold)" stroke-width="8"
+              stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+              id="zikrRingFill" transform="rotate(-90 60 60)"
+              style="transition:stroke-dashoffset 0.3s ease"/>
+          </svg>
+          <div class="zikr-count-center">
+            <div class="zikr-count" id="zikrCount">0</div>
+            <div class="zikr-denom" id="zikrDenom">/ 99</div>
+          </div>
+        </div>
+        <div class="zikr-phrases">
+          <div class="zikr-phrase-item active" onclick="selectZikr(this,'سُبْحَانَ ٱللَّٰهِ','Subhonalloh')">
+            <div class="zpi-ar">سُبْحَانَ ٱللَّٰهِ</div>
+            <div class="zpi-uz">Subhonalloh</div>
+          </div>
+          <div class="zikr-phrase-item" onclick="selectZikr(this,'ٱلْحَمْدُ لِلَّٰهِ','Alhamdulilloh')">
+            <div class="zpi-ar">ٱلْحَمْدُ لِلَّٰهِ</div>
+            <div class="zpi-uz">Alhamdulilloh</div>
+          </div>
+          <div class="zikr-phrase-item" onclick="selectZikr(this,'ٱللَّٰهُ أَكْبَرُ','Alloh akbar')">
+            <div class="zpi-ar">ٱللَّٰهُ أَكْبَرُ</div>
+            <div class="zpi-uz">Alloh akbar</div>
+          </div>
+        </div>
+      </div>
+      <button class="zikr-btn" id="zikrBtn" onclick="tapZikr()">
+        <span class="zikr-btn-ar" id="zikrBtnAr">سُبْحَانَ ٱللَّٰهِ</span>
+        <span class="zikr-btn-uz">Bosing</span>
+      </button>
+      <button class="zikr-reset" onclick="resetZikr()">↺ Qayta boshlash</button>
+    </div>
+
     <!-- Qazo Balance -->
     <div class="qaza-section" id="qazaSection">
       <div class="qaza-header">
@@ -1700,85 +2127,122 @@ body { -webkit-overflow-scrolling: touch; }
 
   <!-- ANALYTICS PAGE -->
   <section class="page-section" id="analyticsPage">
-    <div class="analytics-section">
 
-      <!-- Sarlavha + period tabs -->
-      <div class="section-header" style="margin-bottom:20px;">
-        <div class="section-title">📊 Statistika</div>
-        <div class="period-tabs">
-          <button class="period-tab active" onclick="setPeriod('week', this)">Hafta</button>
-          <button class="period-tab" onclick="setPeriod('month', this)">Oy</button>
-        </div>
+    <!-- Sarlavha -->
+    <div style="padding:20px 0 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:18px;font-weight:800;color:var(--text-primary);">Statistika</div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;margin-top:2px;" id="statsPeriodLabel">So'ngi 30 kun</div>
       </div>
-
-      <!-- Haftalik baho banner -->
-      <div class="weekly-status excellent" id="weeklyStatusBadge" style="margin-bottom:16px;">
-        ⭐ Haftalik baho: A'lo daraja
+      <div class="period-tabs">
+        <button class="period-tab active" onclick="setPeriod('week',this)">7 kun</button>
+        <button class="period-tab" onclick="setPeriod('month',this)">30 kun</button>
       </div>
-
-      <!-- 4 ta asosiy karta -->
-      <div class="stats-cards" style="margin-bottom:16px;">
-        <div class="stat-card highlight" title="Jami o'qilgan / jami bo'lishi kerak bo'lgan namozlar nisbati">
-          <div class="stat-value" id="stat-completion">0%</div>
-          <div class="stat-label">Bajarish</div>
-        </div>
-        <div class="stat-card" title="5/5 namoz o'qilgan kunlar soni">
-          <div class="stat-value" id="stat-perfect">0</div>
-          <div class="stat-label">Mukammal kun</div>
-        </div>
-        <div class="stat-card" title="Jamoat bilan o'qilgan namozlar soni">
-          <div class="stat-value" id="stat-jamaat">0</div>
-          <div class="stat-label">Jamoat</div>
-        </div>
-        <div class="stat-card" title="Ketma-ket mukammal yoki yaxshi kunlar">
-          <div class="stat-value" id="stat-streak">0</div>
-          <div class="stat-label">Streak 🔥</div>
-        </div>
-      </div>
-
-      <!-- Qo'shimcha statistika -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
-          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📈 O'qilgan</div>
-          <div style="font-size:26px;font-weight:700;color:var(--green);" id="stat-total-done">0</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">jami namoz</div>
-        </div>
-        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
-          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">❌ O'tkazilgan</div>
-          <div style="font-size:26px;font-weight:700;color:var(--red);" id="stat-total-missed">0</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">jami namoz</div>
-        </div>
-        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
-          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">⏰ Qazo</div>
-          <div style="font-size:26px;font-weight:700;color:var(--amber);" id="stat-total-qaza">0</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">qazo o'qildi</div>
-        </div>
-        <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:14px;">
-          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">🙏 Yolg'iz</div>
-          <div style="font-size:26px;font-weight:700;color:var(--blue);" id="stat-total-alone">0</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">yolg'iz o'qildi</div>
-        </div>
-      </div>
-
-      <!-- Har bir namoz bo'yicha progress -->
-      <div style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:16px;margin-bottom:16px;">
-        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;">🕌 Har bir namoz holati</div>
-        <div id="prayerBreakdown"></div>
-      </div>
-
-      <!-- Grafik -->
-      <div class="contribution-graph" style="margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">📅 Kunlik grafik</div>
-        <div id="contributionGraph"></div>
-        <div class="graph-legend" style="margin-top:10px;">
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.8)"></div>A'lo (5/5)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.4)"></div>Yaxshi (4/5)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,0.5)"></div>Yomon (1-3)</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.5)"></div>O'qilmadi (0)</div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- Haftalik baho banner -->
+    <div class="weekly-status excellent" id="weeklyStatusBadge" style="margin-bottom:18px;border-radius:4px;"></div>
+
+    <!-- TOP KPI KARTALAR -->
+    <div class="stats-cards" style="margin-bottom:18px;">
+      <div class="stat-card highlight">
+        <div class="stat-value" id="stat-completion">0%</div>
+        <div class="stat-label">Bajarildi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-perfect">0</div>
+        <div class="stat-label">Mukammal 🌟</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-jamaat">0</div>
+        <div class="stat-label">Jamoat 🕌</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-streak" style="color:var(--amber)">0</div>
+        <div class="stat-label">Streak 🔥</div>
+      </div>
+    </div>
+
+    <!-- KUNLIK GRAFIK — yangi, to'g'ri versiya -->
+    <div class="stat-block" style="margin-bottom:18px;">
+      <div class="stat-block-header">
+        <span class="stat-block-icon">📅</span>
+        <span>Kunlik grafik</span>
+        <span class="stat-block-sub" id="graphSubLabel"></span>
+      </div>
+      <!-- Haftalar ustunlari -->
+      <div id="barChartWrap" style="display:flex;align-items:flex-end;gap:5px;height:100px;margin:14px 0 6px;"></div>
+      <!-- Kun nomlari -->
+      <div id="barChartLabels" style="display:flex;gap:5px;"></div>
+      <!-- Legenda -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--green)"></span>5/5 mukammal</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:rgba(93,184,122,0.45)"></span>4/5 yaxshi</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--amber)"></span>1–3 past</span>
+        <span class="wc-leg"><span class="wc-dot" style="background:var(--red)"></span>0/5 o'qilmadi</span>
+      </div>
+    </div>
+
+    <!-- OYLIK MATRITSA (faqat 30 kun tabida) -->
+    <div class="stat-block" id="matrixBlock" style="display:none;margin-bottom:18px;">
+      <div class="stat-block-header">
+        <span class="stat-block-icon">🗓️</span>
+        <span>Oylik matritsa</span>
+      </div>
+      <div id="matrixGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:10px;color:var(--text-muted);">
+        <span>Du Sen Chor Pay Jum Sha Yak</span>
+      </div>
+    </div>
+
+    <!-- HAR BIR NAMOZ PROGRESS -->
+    <div class="stat-block" style="margin-bottom:18px;">
+      <div class="stat-block-header">
+        <span class="stat-block-icon">🕌</span>
+        <span>Namozlar bo'yicha</span>
+      </div>
+      <div id="prayerBreakdown" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- QOLGAN STATISTIKA — 2x2 grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+      <div class="mini-stat-card" style="background:var(--green-dim);border-color:rgba(93,184,122,0.2);">
+        <div class="msc-icon">✅</div>
+        <div class="msc-val" id="stat-total-done" style="color:var(--green)">0</div>
+        <div class="msc-label">O'qilgan</div>
+      </div>
+      <div class="mini-stat-card" style="background:var(--red-dim);border-color:rgba(192,85,74,0.2);">
+        <div class="msc-icon">❌</div>
+        <div class="msc-val" id="stat-total-missed" style="color:var(--red)">0</div>
+        <div class="msc-label">O'tkazilgan</div>
+      </div>
+      <div class="mini-stat-card" style="background:var(--amber-dim);border-color:rgba(201,152,64,0.2);">
+        <div class="msc-icon">⏰</div>
+        <div class="msc-val" id="stat-total-qaza" style="color:var(--amber)">0</div>
+        <div class="msc-label">Qazo o'qildi</div>
+      </div>
+      <div class="mini-stat-card" style="background:var(--blue-dim);border-color:rgba(74,130,192,0.2);">
+        <div class="msc-icon">🙏</div>
+        <div class="msc-val" id="stat-total-alone" style="color:var(--blue)">0</div>
+        <div class="msc-label">Yolg'iz</div>
+      </div>
+    </div>
+
+    <!-- HAFTALIK MAQSAD -->
+    <div class="stat-block" style="margin-bottom:20px;">
+      <div class="stat-block-header">
+        <span class="stat-block-icon">🎯</span>
+        <span>Haftalik maqsad</span>
+        <span class="stat-block-sub" id="goalLabel">35 dan 0 ta</span>
+      </div>
+      <div style="height:10px;background:var(--bg-raised);border-radius:2px;margin-top:14px;overflow:hidden;position:relative;">
+        <div id="goalBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:2px;transition:width 0.7s ease;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--text-muted);">
+        <span>0</span><span>35 namoz (5×7 kun)</span>
+      </div>
+    </div>
+
   </section>
 
 </div>
@@ -1887,7 +2351,8 @@ function bootApp() {
   requestLocation();
   startClock();
   generateMockAnalytics();
-  renderContributionGraph();
+  renderWeekCalendar();
+  renderContributionGraph('week');
   renderQazaBalance();
   registerServiceWorker();
 }
@@ -2147,6 +2612,8 @@ function markPrayer(status) {
   const msg = status === 'pending' ? 'Bekor qilindi' : `${PRAYER_NAMES[prayer].uz} belgilandi ✓`;
   showToast(msg, status === 'pending' ? 'info' : 'success');
   
+  // Haftalik kalendarni yangilash
+  renderWeekCalendar();
   renderQazaBalance();
   updateActivePrayer();
 }
@@ -2257,25 +2724,38 @@ function recoverQaza(prayer) {
 }
 
 // ============================================================
-// ANALYTICS
+// ANALYTICS — TO'G'RI VERSIYA (real localStorage data)
 // ============================================================
-function generateMockAnalytics() {
+
+function getJoinDate() {
+  if (state.user?.createdAt) {
+    const d = new Date(state.user.createdAt);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+  // Agar createdAt yo'q bo'lsa — bugundan boshlaydi
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function buildAnalyticsData(days) {
   const data = [];
   const today = new Date();
-  const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  today.setHours(0,0,0,0);
+  const joinDate = getJoinDate();
+  const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
 
-  // Foydalanuvchi kirgan kundan boshlab hisoblash
-  const joinDate = state.user?.createdAt ? new Date(state.user.createdAt) : new Date();
-  joinDate.setHours(0,0,0,0);
-
-  for (let i = 29; i >= 0; i--) {
+  for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
+    const isToday = i === 0;
+    const isFuture = d > today;
+    const isBeforeJoin = d < joinDate;
 
-    // Kirgan kundan oldingi kunlarni ko'rsatmaslik
-    if (d < joinDate) {
-      data.push({ date: dateStr, score: 'none', completed_count: 0, missed_count: 0, jamaat_count: 0 });
+    if (isFuture || isBeforeJoin) {
+      data.push({ date: dateStr, score: 'none', completed_count: 0, missed_count: 0, jamaat_count: 0, isToday, isFuture, isBeforeJoin });
       continue;
     }
 
@@ -2285,27 +2765,32 @@ function generateMockAnalytics() {
       const statuses = JSON.parse(saved);
       prayers.forEach(p => {
         const s = statuses[p];
-        if (s && s !== 'pending') {
-          if (s === 'missed') missed++;
-          else { completed++; if (s === 'completed_jamaat') jamaat++; }
-        }
+        if (!s || s === 'pending') return;
+        if (s === 'missed') missed++;
+        else { completed++; if (s === 'completed_jamaat') jamaat++; }
       });
     }
 
     let score = 'failed';
     if (completed === 5) score = 'excellent';
     else if (completed >= 4) score = 'good';
-    else if (completed >= 2) score = 'poor';
+    else if (completed >= 1) score = 'poor';
 
-    data.push({ date: dateStr, score, completed_count: completed, missed_count: missed, jamaat_count: jamaat });
+    data.push({ date: dateStr, score, completed_count: completed, missed_count: missed, jamaat_count: jamaat, isToday, isFuture, isBeforeJoin });
   }
 
+  return data;
+}
+
+function generateMockAnalytics() {
+  // Haqiqiy data bilan ishlaydi — mock emas
+  const data = buildAnalyticsData(30);
   state.analyticsData = data;
   updateStatsCards(data);
 }
 
 function updateStatsCards(data) {
-  const activeDays = data.filter(d => d.score !== 'none');
+  const activeDays = data.filter(d => d.score !== 'none' && !d.isBeforeJoin);
   const totalDone = activeDays.reduce((a, b) => a + b.completed_count, 0);
   const totalMissed = activeDays.reduce((a, b) => a + b.missed_count, 0);
   const totalJamaat = activeDays.reduce((a, b) => a + (b.jamaat_count || 0), 0);
@@ -2317,20 +2802,30 @@ function updateStatsCards(data) {
   document.getElementById('stat-perfect').textContent = perfect;
   document.getElementById('stat-jamaat').textContent = totalJamaat;
 
+  // Streak — ketma-ket yaxshi/a'lo kunlar (bugundan ortga)
   let streak = 0;
   for (let i = data.length - 1; i >= 0; i--) {
-    if (data[i].score === 'none') continue;
+    if (data[i].isBeforeJoin || data[i].isFuture) continue;
     if (data[i].score === 'excellent' || data[i].score === 'good') streak++;
     else break;
   }
   document.getElementById('stat-streak').textContent = streak;
+
+  // Haftalik maqsad (7 kun)
+  const week7 = activeDays.slice(-7);
+  const weekDone = week7.reduce((a, b) => a + b.completed_count, 0);
+  const goalPct = Math.round(weekDone / 35 * 100);
+  const goalBar = document.getElementById('goalBar');
+  const goalLabel = document.getElementById('goalLabel');
+  if (goalBar) goalBar.style.width = Math.min(goalPct, 100) + '%';
+  if (goalLabel) goalLabel.textContent = `35 dan ${weekDone} ta (${goalPct}%)`;
 
   const elDone = document.getElementById('stat-total-done');
   const elMissed = document.getElementById('stat-total-missed');
   if (elDone) elDone.textContent = totalDone;
   if (elMissed) elMissed.textContent = totalMissed;
 
-  // Qazo va yolg'iz hisoblash localStorage dan
+  // Qazo va yolg'iz
   let totalQaza = 0, totalAlone = 0;
   const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
   activeDays.forEach(d => {
@@ -2343,30 +2838,34 @@ function updateStatsCards(data) {
       });
     }
   });
-  const elQaza = document.getElementById('stat-total-qaza');
-  const elAlone = document.getElementById('stat-total-alone');
-  if (elQaza) elQaza.textContent = totalQaza;
-  if (elAlone) elAlone.textContent = totalAlone;
+  if (document.getElementById('stat-total-qaza')) document.getElementById('stat-total-qaza').textContent = totalQaza;
+  if (document.getElementById('stat-total-alone')) document.getElementById('stat-total-alone').textContent = totalAlone;
 
   renderPrayerBreakdown(activeDays);
 
-  const recent = activeDays.slice(-7);
-  const recentPct = recent.length > 0 ? recent.reduce((a, b) => a + b.completed_count, 0) / (recent.length * 5) : 0;
+  // Haftalik baho
+  const recent7 = activeDays.slice(-7);
+  const recentPct = recent7.length > 0 ? recent7.reduce((a, b) => a + b.completed_count, 0) / (recent7.length * 5) : 0;
   const statusEl = document.getElementById('weeklyStatusBadge');
-  statusEl.className = 'weekly-status';
-  if (recentPct >= 0.95) {
-    statusEl.classList.add('excellent');
-    statusEl.textContent = "⭐ Haftalik baho: A'lo daraja — 5/5 namoz!";
-  } else if (recentPct >= 0.7) {
-    statusEl.classList.add('good');
-    statusEl.textContent = "✅ Haftalik baho: Yaxshi — davom eting!";
-  } else if (recentPct > 0) {
-    statusEl.classList.add('poor');
-    statusEl.textContent = "⚠️ Haftalik baho: Yaxshilash kerak";
-  } else {
-    statusEl.classList.add('poor');
-    statusEl.textContent = "🕌 Namozlarni belgilashni boshlang!";
+  if (statusEl) {
+    statusEl.className = 'weekly-status';
+    if (recentPct >= 0.95) {
+      statusEl.classList.add('excellent');
+      statusEl.innerHTML = "⭐ A'lo daraja — so'ngi 7 kunda deyarli barchasi o'qildi!";
+    } else if (recentPct >= 0.7) {
+      statusEl.classList.add('good');
+      statusEl.innerHTML = "✅ Yaxshi — davom eting, yana ham yaxshilash mumkin!";
+    } else if (recentPct > 0) {
+      statusEl.classList.add('poor');
+      statusEl.innerHTML = "⚠️ Yaxshilash kerak — har kun 5 namoz o'qishga harakat qiling";
+    } else {
+      statusEl.classList.add('poor');
+      statusEl.innerHTML = "🕌 Hali namozlar belgilanmagan — bugundan boshlang!";
+    }
   }
+
+  // Streak uchun haftalik kalendarni ham yangilaymiz
+  updateCalStreak(streak);
 }
 
 function renderPrayerBreakdown(activeDays) {
@@ -2376,6 +2875,11 @@ function renderPrayerBreakdown(activeDays) {
   const labels = { fajr:'🌅 Bomdod', dhuhr:'☀️ Peshin', asr:'🌤️ Asr', maghrib:'🌆 Shom', isha:'🌙 Xufton' };
   const total = activeDays.length;
 
+  if (total === 0) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:14px 0;">Hali ma\'lumot yo\'q. Namozlarni belgilashni boshlang!</div>';
+    return;
+  }
+
   el.innerHTML = prayers.map(p => {
     let done = 0, missed = 0;
     activeDays.forEach(d => {
@@ -2383,65 +2887,117 @@ function renderPrayerBreakdown(activeDays) {
       if (saved) {
         const st = JSON.parse(saved);
         const s = st[p];
-        if (s && s !== 'pending') {
-          if (s === 'missed') missed++;
-          else done++;
-        }
+        if (s && s !== 'pending') { if (s === 'missed') missed++; else done++; }
       }
     });
     const pct = total > 0 ? Math.round(done / total * 100) : 0;
     const barColor = pct >= 90 ? 'var(--green)' : pct >= 60 ? 'var(--teal)' : pct >= 30 ? 'var(--amber)' : 'var(--red)';
     const emoji = pct >= 90 ? '✅' : pct >= 60 ? '🔶' : pct >= 30 ? '⚠️' : '❌';
-    return '<div style="margin-bottom:14px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">' +
-        '<span style="font-size:13px;font-weight:600;">' + labels[p] + '</span>' +
-        '<span style="font-size:12px;color:var(--text-muted);">' + emoji + ' ' + done + '/' + total + ' kun &nbsp;·&nbsp; ' + pct + '%</span>' +
-      '</div>' +
-      '<div style="height:7px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">' +
-        '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;transition:width 0.6s ease;"></div>' +
-      '</div>' +
-    '</div>';
+    return `<div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:13px;font-weight:700;">${labels[p]}</span>
+        <span style="font-size:11px;color:var(--text-muted);">${emoji} <b style="color:var(--text-secondary)">${done}/${total}</b> kun · <b style="color:var(--text-secondary)">${pct}%</b></span>
+      </div>
+      <div style="height:8px;background:var(--bg-raised);border-radius:2px;overflow:hidden;position:relative;">
+        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.7s ease;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Bar chart — asosiy grafik
+function renderBarChart(period) {
+  const days = period === 'month' ? 30 : 7;
+  const data = buildAnalyticsData(days);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const DAY_LABELS = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+
+  const barWrap = document.getElementById('barChartWrap');
+  const labelWrap = document.getElementById('barChartLabels');
+  const subLabel = document.getElementById('graphSubLabel');
+  const matrixBlock = document.getElementById('matrixBlock');
+
+  if (!barWrap) return;
+
+  // Faqat join kunidan keyingi active data
+  const activeDays = data.filter(d => !d.isBeforeJoin && !d.isFuture);
+  if (subLabel) subLabel.textContent = `${activeDays.length} kun`;
+
+  const maxH = 100; // px
+
+  barWrap.style.display = 'flex';
+  barWrap.style.alignItems = 'flex-end';
+  barWrap.style.gap = '5px';
+  barWrap.style.height = maxH + 'px';
+
+  const barColor = d => {
+    if (d.isBeforeJoin || d.isFuture) return 'var(--bg-raised)';
+    if (d.score === 'excellent') return 'var(--green)';
+    if (d.score === 'good') return 'rgba(93,184,122,0.45)';
+    if (d.score === 'poor') return 'var(--amber)';
+    return 'var(--red)';
+  };
+
+  barWrap.innerHTML = data.map((d, i) => {
+    const isToday = d.date === todayStr;
+    const h = d.isBeforeJoin || d.isFuture
+      ? 4
+      : d.completed_count === 0 ? 8 : Math.round((d.completed_count / 5) * maxH);
+    const opacity = d.isBeforeJoin ? 0.18 : d.isFuture ? 0.15 : 1;
+    return `<div class="bar-col" style="flex:1;height:100%;display:flex;align-items:flex-end;">
+      <div class="bar-fill"
+        style="width:100%;height:${h}px;background:${barColor(d)};opacity:${opacity};border-radius:2px 2px 0 0;${isToday ? 'box-shadow:0 0 0 1.5px var(--gold);' : ''}"
+        data-tip="${d.isBeforeJoin ? 'Tizimga kirmasdan oldin' : d.isFuture ? 'Kelgusi kun' : d.date + ': ' + d.completed_count + '/5'}"></div>
+    </div>`;
+  }).join('');
+
+  labelWrap.style.display = 'flex';
+  labelWrap.style.gap = '5px';
+  labelWrap.innerHTML = data.map(d => {
+    const isToday = d.date === todayStr;
+    const dayIdx = new Date(d.date).getDay();
+    return `<div style="flex:1;text-align:center;">
+      <div class="bar-day${isToday ? ' today' : ''}">${DAY_LABELS[dayIdx]}</div>
+      <div class="bar-num" style="${d.isBeforeJoin || d.isFuture ? 'opacity:0.2' : ''}">${d.isBeforeJoin || d.isFuture ? '—' : d.completed_count}</div>
+    </div>`;
+  }).join('');
+
+  // 30 kunlik matritsa
+  if (matrixBlock) {
+    matrixBlock.style.display = period === 'month' ? 'block' : 'none';
+    if (period === 'month') renderMatrixGrid(data);
+  }
+}
+
+function renderMatrixGrid(data) {
+  const grid = document.getElementById('matrixGrid');
+  if (!grid) return;
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  grid.innerHTML = data.map(d => {
+    const isToday = d.date === todayStr;
+    let bg = 'var(--bg-raised)', color = 'var(--text-muted)', border = '1px solid var(--arch-line)';
+    if (!d.isBeforeJoin && !d.isFuture) {
+      if (d.score === 'excellent')   { bg='rgba(93,184,122,0.65)'; color='#fff'; border='none'; }
+      else if (d.score === 'good')   { bg='rgba(93,184,122,0.28)'; color='var(--green)'; border='none'; }
+      else if (d.score === 'poor')   { bg='rgba(201,152,64,0.35)'; color='var(--amber)'; border='none'; }
+      else if (d.score === 'failed') { bg='rgba(192,85,74,0.4)'; color='var(--red)'; border='none'; }
+    }
+    const opacity = d.isBeforeJoin ? 0.15 : d.isFuture ? 0.12 : 1;
+    const title = d.isBeforeJoin ? 'Oldin' : d.isFuture ? 'Kelgusi' : `${d.date}: ${d.completed_count}/5`;
+    return `<div class="matrix-cell" title="${title}"
+      style="background:${bg};color:${color};border:${border};opacity:${opacity};${isToday ? 'box-shadow:0 0 0 2px var(--gold);' : ''}">
+      ${d.isBeforeJoin || d.isFuture ? '' : d.completed_count}
+    </div>`;
   }).join('');
 }
 
 function renderContributionGraph(period = 'week') {
-  const graphEl = document.getElementById('contributionGraph');
   const days = period === 'month' ? 30 : 7;
-  const data = state.analyticsData.slice(-days);
-  const todayStr = new Date().toISOString().split('T')[0];
-  
-  if (period === 'week') {
-    // Week view - horizontal
-    graphEl.style.display = 'flex';
-    graphEl.style.gap = '6px';
-    graphEl.style.flexWrap = 'wrap';
-    
-    graphEl.innerHTML = data.map(d => {
-      const isToday = d.date === todayStr;
-      return `<div class="graph-cell score-${d.score} ${isToday ? 'today' : ''}"
-        title="${d.date}: ${d.completed_count}/5 namoz | ${d.score}"
-        style="flex:1;min-width:36px;height:60px;border-radius:10px;font-size:11px;">
-        <div style="text-align:center;line-height:1.3">
-          <div style="font-size:16px">${d.completed_count}</div>
-          <div style="font-size:9px;opacity:0.7">${getDayLabel(d.date)}</div>
-        </div>
-      </div>`;
-    }).join('');
-  } else {
-    // Month view - grid
-    graphEl.style.display = 'grid';
-    graphEl.style.gridTemplateColumns = 'repeat(7, 1fr)';
-    graphEl.style.gap = '4px';
-    
-    graphEl.innerHTML = data.map(d => {
-      const isToday = d.date === todayStr;
-      return `<div class="graph-cell score-${d.score} ${isToday ? 'today' : ''}"
-        title="${d.date}: ${d.completed_count}/5 namoz"
-        style="aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">
-        ${d.completed_count}
-      </div>`;
-    }).join('');
-  }
+  const data = buildAnalyticsData(days);
+  state.analyticsData = data;
+  updateStatsCards(data);
+  renderBarChart(period);
 }
 
 function getDayLabel(dateStr) {
@@ -2452,7 +3008,151 @@ function getDayLabel(dateStr) {
 function setPeriod(period, btn) {
   document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+  const label = document.getElementById('statsPeriodLabel');
+  if (label) label.textContent = period === 'week' ? "So'ngi 7 kun" : "So'ngi 30 kun";
   renderContributionGraph(period);
+}
+
+// ============================================================
+// HAFTALIK KALENDAR (asosiy sahifa)
+// ============================================================
+function renderWeekCalendar() {
+  const container = document.getElementById('weekCalDays');
+  if (!container) return;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().split('T')[0];
+  const joinDate = getJoinDate();
+  const DAY_LABELS = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+
+  // Haftaning dushanbasidan boshlab (yoki 7 kun oldindan)
+  const days = [];
+  const startDay = new Date(today);
+  // Haftaning boshi — Dushanba
+  const dayOfWeek = today.getDay(); // 0=Ya, 1=Du...6=Sh
+  const daysFromMon = (dayOfWeek + 6) % 7; // Dushanba = 0
+  startDay.setDate(today.getDate() - daysFromMon);
+  // 7 kun qo'shamiz
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startDay);
+    d.setDate(startDay.getDate() + i);
+    days.push(d);
+  }
+
+  container.innerHTML = days.map(d => {
+    const dateStr = d.toISOString().split('T')[0];
+    const isToday = dateStr === todayStr;
+    const isFuture = d > today;
+    const isBeforeJoin = d < joinDate;
+
+    let ballClass = '';
+    let countText = '—';
+
+    if (!isFuture && !isBeforeJoin) {
+      const saved = localStorage.getItem('status_' + dateStr);
+      let completed = 0;
+      if (saved) {
+        const st = JSON.parse(saved);
+        ['fajr','dhuhr','asr','maghrib','isha'].forEach(p => {
+          const s = st[p];
+          if (s && s !== 'pending' && s !== 'missed') completed++;
+        });
+      }
+      countText = `${completed}/5`;
+      if (completed === 5) ballClass = 'score-5';
+      else if (completed === 4) ballClass = 'score-4';
+      else if (completed >= 1) ballClass = 'score-1-3';
+      else ballClass = 'score-0';
+    } else if (isFuture) {
+      ballClass = 'future';
+      countText = '';
+    } else {
+      ballClass = 'before-join';
+      countText = '';
+    }
+
+    return `<div class="wcd-item">
+      <div class="wcd-label" style="${isToday ? 'color:var(--gold)' : ''}">${DAY_LABELS[d.getDay()]}</div>
+      <div class="wcd-ball ${ballClass} ${isToday ? 'today' : ''}">${isFuture || isBeforeJoin ? '' : countText.split('/')[0]}</div>
+      <div class="wcd-count" style="${isToday ? 'color:var(--gold);font-weight:800' : ''}">${isFuture ? '' : isBeforeJoin ? '' : countText}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateCalStreak(streak) {
+  const el = document.getElementById('calStreakNum');
+  if (el) el.textContent = streak;
+}
+
+// ============================================================
+// ZIKR HISOBLAGICH
+// ============================================================
+const zikrState = {
+  count: 0,
+  target: 99,
+  phrase: 'سُبْحَانَ ٱللَّٰهِ',
+  phraseLatin: 'Subhonalloh',
+  done: false,
+};
+
+function tapZikr() {
+  if (zikrState.done) return;
+  zikrState.count++;
+  updateZikrUI();
+
+  // Vibration
+  if (navigator.vibrate) navigator.vibrate(30);
+
+  if (zikrState.count >= zikrState.target) {
+    zikrState.done = true;
+    showToast(`✅ ${zikrState.phraseLatin} — ${zikrState.target} marta!`, 'success');
+    // Flash effect
+    const btn = document.getElementById('zikrBtn');
+    if (btn) { btn.style.background = 'var(--green-dim)'; btn.style.borderColor = 'var(--green)'; }
+    setTimeout(() => {
+      if (btn) { btn.style.background = ''; btn.style.borderColor = ''; }
+    }, 1500);
+  }
+}
+
+function updateZikrUI() {
+  const cnt = document.getElementById('zikrCount');
+  const denom = document.getElementById('zikrDenom');
+  const ring = document.getElementById('zikrRingFill');
+  if (!cnt || !ring) return;
+
+  cnt.textContent = zikrState.count;
+  if (denom) denom.textContent = '/ ' + zikrState.target;
+
+  // Ring: circumference = 2*pi*52 ≈ 326.7
+  const pct = Math.min(zikrState.count / zikrState.target, 1);
+  const offset = 326.7 * (1 - pct);
+  ring.style.strokeDashoffset = offset;
+}
+
+function resetZikr() {
+  zikrState.count = 0;
+  zikrState.done = false;
+  updateZikrUI();
+  const btn = document.getElementById('zikrBtn');
+  if (btn) { btn.style.background = ''; btn.style.borderColor = ''; }
+}
+
+function setZikrTarget(val) {
+  zikrState.target = parseInt(val);
+  zikrState.count = 0;
+  zikrState.done = false;
+  updateZikrUI();
+}
+
+function selectZikr(el, ar, latin) {
+  document.querySelectorAll('.zikr-phrase-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  zikrState.phrase = ar;
+  zikrState.phraseLatin = latin;
+  const btnAr = document.getElementById('zikrBtnAr');
+  if (btnAr) btnAr.textContent = ar;
+  resetZikr();
 }
 
 // ============================================================
@@ -2468,7 +3168,9 @@ function showPage(page) {
   } else if (page === 'analytics') {
     document.getElementById('analyticsPage').classList.add('active');
     document.getElementById('navAnalytics').classList.add('active');
-    renderContributionGraph();
+    renderContributionGraph('week');
+    // Reset period tabs
+    document.querySelectorAll('.period-tab').forEach((t,i) => t.classList.toggle('active', i===0));
   } else if (page === 'qaza') {
     document.getElementById('qazaPage').classList.add('active');
     document.getElementById('navQaza').classList.add('active');
