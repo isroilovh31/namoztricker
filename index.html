@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Namoz Tracker - Islomiy Ekotizim">
+<title>نماز · Namoz</title>
+<link rel="manifest" href="/manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap"></noscript>
+
+<style>
+/* ============================================================
+   DESIGN TOKENS - Islamic Dark Premium Theme
+   ============================================================ */
+:root {
+  /* Core palette */
+  --bg-void: #060a14;
+  --bg-base: #0a0f1e;
+  --bg-surface: #0f1629;
+  --bg-raised: #162040;
+  --bg-hover: #1e2d50;
+
+  /* Gold accent - Islamic */
+  --gold: #c9a227;
+  --gold-light: #e8c547;
+  --gold-dim: rgba(201,162,39,0.15);
+  --gold-glow: rgba(201,162,39,0.35);
+
+  /* Teal accent */
+  --teal: #2dd4bf;
+  --teal-dim: rgba(45,212,191,0.12);
+
+  /* Prayer status colors */
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.15);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.15);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.15);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.15);
+
+  /* Text */
+  --text-primary: #e8e4d8;
+  --text-secondary: rgba(232,228,216,0.6);
+  --text-muted: rgba(232,228,216,0.35);
+
+  /* Glass */
+  --glass-bg: rgba(15,22,41,0.7);
+  --glass-border: rgba(201,162,39,0.2);
+  --glass-blur: blur(20px);
+
+  /* Typography */
+  --font-arabic: 'Amiri', serif;
+  --font-ui: 'Nunito', sans-serif;
+
+  /* Shadows */
+  --shadow-gold: 0 0 40px rgba(201,162,39,0.15);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+[data-theme="light"] {
+  --bg-void: #f0ede6;
+  --bg-base: #f5f2eb;
+  --bg-surface: #fffdf7;
+  --bg-raised: #fff8e8;
+  --bg-hover: #fef3cc;
+  --glass-bg: rgba(255,253,247,0.85);
+  --glass-border: rgba(201,162,39,0.3);
+  --text-primary: #1a1408;
+  --text-secondary: rgba(26,20,8,0.65);
+  --text-muted: rgba(26,20,8,0.4);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* Animated background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(201,162,39,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(45,212,191,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Geometric Islamic pattern overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.03'%3E%3Cpath d='M30 0l8.66 15H60L45 22.5 51.96 37.5 30 30 8.04 37.5 15 22.5 0 15h21.34z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app-wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 16px 100px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid rgba(201,162,39,0.12);
+  margin-bottom: 28px;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-arabic {
+  font-family: var(--font-arabic);
+  font-size: 28px;
+  color: var(--gold);
+  line-height: 1;
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.logo-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+.icon-btn {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+.icon-btn:hover { background: var(--bg-hover); color: var(--gold); border-color: var(--gold-glow); }
+
+/* ============================================================
+   DATE & LOCATION STRIP
+   ============================================================ */
+.date-strip {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeDown 0.6s ease;
+}
+
+.hijri-date {
+  font-family: var(--font-arabic);
+  font-size: 18px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.gregorian-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.location-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.location-tag:hover { border-color: var(--gold); color: var(--gold); }
+.location-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+
+/* ============================================================
+   NEXT PRAYER HERO
+   ============================================================ */
+.next-prayer-hero {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 28px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-gold);
+  animation: fadeUp 0.7s ease;
+}
+
+.next-prayer-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 200px;
+  background: radial-gradient(ellipse, rgba(201,162,39,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-label { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.hero-prayer-name { font-family: var(--font-arabic); font-size: 32px; color: var(--gold); margin-bottom: 4px; }
+.hero-time { font-size: 52px; font-weight: 700; letter-spacing: -2px; color: var(--text-primary); }
+.hero-countdown { font-size: 14px; color: var(--teal); margin-top: 8px; }
+.hero-progress {
+  margin-top: 20px;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hero-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+  border-radius: 2px;
+  transition: width 60s linear;
+}
+
+/* ============================================================
+   PRAYER CARDS GRID
+   ============================================================ */
+.prayers-section-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.prayer-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+@media (max-width: 720px) { .prayer-cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .prayer-cards { grid-template-columns: 1fr 1fr; } }
+
+.prayer-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(201,162,39,0.1);
+  border-radius: 20px;
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  user-select: none;
+}
+
+.prayer-card:nth-child(1) { animation-delay: 0.05s; }
+.prayer-card:nth-child(2) { animation-delay: 0.10s; }
+.prayer-card:nth-child(3) { animation-delay: 0.15s; }
+.prayer-card:nth-child(4) { animation-delay: 0.20s; }
+.prayer-card:nth-child(5) { animation-delay: 0.25s; }
+
+.prayer-card:hover { transform: translateY(-4px); border-color: var(--gold-glow); box-shadow: 0 12px 40px rgba(0,0,0,0.3), var(--shadow-gold); }
+
+/* Active (current prayer) */
+.prayer-card.active {
+  border-color: var(--gold);
+  background: rgba(201,162,39,0.08);
+  box-shadow: 0 0 0 1px var(--gold), var(--shadow-gold);
+  animation: fadeUp 0.5s ease both, activePulse 3s ease-in-out infinite;
+}
+
+/* Status colors */
+.prayer-card.done-jamaat { border-color: rgba(34,197,94,0.5); background: var(--green-dim); }
+.prayer-card.done-alone  { border-color: rgba(59,130,246,0.4); background: var(--blue-dim); }
+.prayer-card.done-ontime { border-color: rgba(34,197,94,0.5); background: var(--green-dim); }
+.prayer-card.done-qaza   { border-color: rgba(245,158,11,0.4); background: var(--amber-dim); }
+.prayer-card.missed      { border-color: rgba(239,68,68,0.4); background: var(--red-dim); }
+
+.card-icon { font-size: 22px; margin-bottom: 8px; }
+.card-arabic { font-family: var(--font-arabic); font-size: 16px; color: var(--gold); margin-bottom: 2px; }
+.card-name { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; }
+.card-time { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+
+.card-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.prayer-card.done-jamaat .card-status-badge { background: var(--green-dim); color: var(--green); }
+.prayer-card.done-alone .card-status-badge  { background: var(--blue-dim);  color: var(--blue); }
+.prayer-card.done-ontime .card-status-badge { background: var(--green-dim); color: var(--green); }
+.prayer-card.done-qaza .card-status-badge   { background: var(--amber-dim); color: var(--amber); }
+.prayer-card.missed .card-status-badge      { background: var(--red-dim);   color: var(--red); }
+.prayer-card.active .card-status-badge      { background: var(--gold-dim);  color: var(--gold); }
+
+/* Active glow ring */
+.prayer-card.active::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(201,162,39,0.3), rgba(45,212,191,0.1), rgba(201,162,39,0.3));
+  z-index: -1;
+  animation: rotateBorder 4s linear infinite;
+}
+
+/* ============================================================
+   STATUS MODAL (Dropdown)
+   ============================================================ */
+.status-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.status-modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.status-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px 24px 20px 20px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  transform: translateY(30px);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.status-modal-overlay.open .status-modal { transform: translateY(0); }
+
+.modal-title { font-family: var(--font-arabic); font-size: 20px; color: var(--gold); text-align: center; margin-bottom: 20px; }
+
+.status-options { display: flex; flex-direction: column; gap: 8px; }
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: var(--bg-raised);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+.status-option:hover { border-color: var(--gold-glow); background: var(--bg-hover); }
+.status-option.cancel { color: var(--red); justify-content: center; }
+.status-option .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ============================================================
+   ANALYTICS SECTION
+   ============================================================ */
+.analytics-section { margin-bottom: 36px; animation: fadeUp 0.9s ease; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+.period-tabs { display: flex; gap: 4px; }
+.period-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.period-tab.active { background: var(--gold-dim); border-color: var(--gold-glow); color: var(--gold); }
+
+/* Contribution graph */
+.contribution-graph {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.graph-days {
+  display: grid;
+  gap: 4px;
+}
+
+.graph-week { display: flex; gap: 4px; }
+
+.graph-cell {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+}
+.graph-cell:hover { transform: scale(1.2); z-index: 10; }
+.graph-cell[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--bg-raised);
+  border: 1px solid var(--glass-border);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--text-primary);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.graph-cell.score-excellent { background: rgba(34,197,94,0.7); color: #fff; }
+.graph-cell.score-good      { background: rgba(34,197,94,0.35); color: rgba(34,197,94,0.9); }
+.graph-cell.score-poor      { background: rgba(245,158,11,0.35); color: rgba(245,158,11,0.9); }
+.graph-cell.score-failed    { background: rgba(239,68,68,0.5); color: rgba(239,68,68,1); }
+.graph-cell.today           { box-shadow: 0 0 0 2px var(--gold); }
+
+.graph-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ============================================================
+   STATS CARDS
+   ============================================================ */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (max-width: 600px) { .stats-cards { grid-template-columns: repeat(2, 1fr); } }
+
+.stat-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value { font-size: 28px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+.stat-card.highlight .stat-value { color: var(--gold); }
+
+/* Weekly status badge */
+.weekly-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+.weekly-status.excellent { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.weekly-status.good      { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+.weekly-status.poor      { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
+
+/* ============================================================
+   QAZO BALANCE
+   ============================================================ */
+.qaza-section {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 36px;
+  animation: fadeUp 1s ease;
+}
+
+.qaza-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.qaza-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.qaza-badge { padding: 4px 12px; border-radius: 20px; background: var(--red-dim); color: var(--red); font-size: 12px; font-weight: 700; }
+
+.qaza-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+@media (max-width: 400px) { .qaza-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.qaza-item {
+  background: var(--bg-raised);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.qaza-item-name { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+.qaza-item-count { font-size: 22px; font-weight: 700; color: var(--red); margin: 4px 0; }
+.qaza-recover-btn {
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(239,68,68,0.4);
+  background: var(--red-dim);
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.qaza-recover-btn:hover { background: rgba(239,68,68,0.3); }
+.qaza-item.empty .qaza-item-count { color: var(--green); }
+.qaza-item.empty .qaza-recover-btn { display: none; }
+
+/* ============================================================
+   BOTTOM NAV
+   ============================================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 0 20px 20px;
+  z-index: 50;
+}
+.bottom-nav-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-card);
+}
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-ui);
+}
+.nav-btn .nav-icon { font-size: 22px; transition: transform 0.2s; }
+.nav-btn:hover, .nav-btn.active { color: var(--gold); }
+.nav-btn.active .nav-icon { transform: scale(1.15); }
+.nav-btn.active { background: var(--gold-dim); }
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-void);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.25s ease;
+}
+.loading-screen.hidden { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+
+.loader-arabic {
+  font-family: var(--font-arabic);
+  font-size: 64px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 20px var(--gold-glow));
+  animation: glow 2s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+.loader-text { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); }
+.loader-spinner {
+  width: 40px; height: 40px;
+  border: 2px solid rgba(201,162,39,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-top: 20px;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--bg-raised);
+  border-left: 3px solid var(--gold);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-card);
+  animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 300px;
+}
+.toast.success { border-color: var(--green); }
+.toast.error   { border-color: var(--red); }
+.toast.info    { border-color: var(--teal); }
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+@keyframes activePulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--gold), 0 0 20px rgba(201,162,39,0.2); }
+  50%       { box-shadow: 0 0 0 2px var(--gold), 0 0 40px rgba(201,162,39,0.35); }
+}
+@keyframes glow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(201,162,39,0.4)); }
+  50%       { filter: drop-shadow(0 0 40px rgba(201,162,39,0.8)); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rotateBorder {
+  to { background-position: 200% center; }
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   AUTH OVERLAY (Onboarding / Code Login)
+   ============================================================ */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* frosted background over the blurred app */
+  background: rgba(6,10,20,0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: opacity 0.4s;
+}
+.auth-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  padding: 36px 28px 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), var(--shadow-gold);
+  animation: fadeUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.auth-arabic {
+  font-family: var(--font-arabic);
+  font-size: 38px;
+  color: var(--gold);
+  text-align: center;
+  filter: drop-shadow(0 0 14px var(--gold-glow));
+  margin-bottom: 6px;
+}
+.auth-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.auth-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* Tab switcher */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--bg-raised);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.auth-tab.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold-glow);
+}
+
+/* Panels */
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+
+/* Input */
+.auth-input-wrap { margin-bottom: 16px; }
+.auth-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: block; }
+.auth-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.auth-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.auth-input::placeholder { color: var(--text-muted); font-weight: 400; }
+
+/* Code display */
+.generated-code-wrap {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg-raised);
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  margin: 16px 0;
+  display: none;
+}
+.generated-code-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+.generated-code {
+  font-family: 'Courier New', monospace;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 10px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 10px var(--gold-glow));
+}
+.code-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.5; }
+
+/* Code input boxes */
+.code-boxes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 8px 0 16px;
+}
+.code-box {
+  width: 48px; height: 56px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s;
+  caret-color: var(--gold);
+}
+.code-box:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+
+/* Buttons */
+.auth-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, var(--gold), #a07818);
+  color: #0a0a0a;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+.auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,162,39,0.4); }
+.auth-btn:active { transform: translateY(0); }
+.auth-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.auth-btn-ghost {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.auth-btn-ghost:hover { border-color: var(--gold-glow); color: var(--gold); }
+
+/* Greeting banner (inside app after login) */
+.greeting-banner {
+  background: linear-gradient(135deg, rgba(201,162,39,0.1), rgba(45,212,191,0.06));
+  border: 1px solid var(--gold-glow);
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeDown 0.5s ease;
+}
+.greeting-name { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+.greeting-sub  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.greeting-code-badge {
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 3px;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  title: "Kod nusxalash";
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loader-arabic">بسم الله</div>
+  <div class="loader-text">Namoz Tracker</div>
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Status Modal -->
+<div class="status-modal-overlay" id="statusModal">
+  <div class="status-modal">
+    <div class="modal-title" id="modalPrayerName">Bomdod Namozi</div>
+    <div class="status-options">
+      <div class="status-option" onclick="markPrayer('completed_jamaat')">
+        <span class="dot" style="background:var(--green)"></span>
+        🕌 Jamoat bilan o'qildi
+      </div>
+      <div class="status-option" onclick="markPrayer('completed_ontime')">
+        <span class="dot" style="background:var(--teal)"></span>
+        ✅ O'z vaqtida o'qildi
+      </div>
+      <div class="status-option" onclick="markPrayer('completed_alone')">
+        <span class="dot" style="background:var(--blue)"></span>
+        🙏 Yolg'iz o'qildi
+      </div>
+      <div class="status-option" onclick="markPrayer('completed_qaza')">
+        <span class="dot" style="background:var(--amber)"></span>
+        ⏰ Kechikib (qazo) o'qildi
+      </div>
+      <div class="status-option" onclick="markPrayer('pending')">
+        <span class="dot" style="background:var(--text-muted)"></span>
+        ↩️ Bekor qilish
+      </div>
+      <div class="status-option cancel" onclick="closeModal()">✕ Yopish</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     AUTH OVERLAY
+     ============================================================ -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-arabic">بسم الله</div>
+    <div class="auth-title">NamozTracker</div>
+    <div class="auth-subtitle" id="authSubtitle">Xush kelibsiz! Davom etish uchun tanlang</div>
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabNew" onclick="switchAuthTab('new')">✨ Yangi hisob</button>
+      <button class="auth-tab" id="tabCode" onclick="switchAuthTab('code')">🔑 Kod bilan kirish</button>
+    </div>
+
+    <!-- PANEL: Yangi hisob -->
+    <div class="auth-panel active" id="panelNew">
+      <div class="auth-input-wrap">
+        <label class="auth-label" for="inputName">Ismingiz</label>
+        <input class="auth-input" id="inputName" type="text" placeholder="Masalan: Abdulloh" maxlength="40" autocomplete="off" />
+      </div>
+      <button class="auth-btn" id="btnCreateAccount" onclick="createAccount()">Boshlash →</button>
+
+      <!-- Generated code shown here -->
+      <div class="generated-code-wrap" id="generatedCodeWrap">
+        <div class="generated-code-label">SIZNING SHAXSIY KODINGIZ</div>
+        <div class="generated-code" id="generatedCodeDisplay">·····</div>
+        <div class="code-hint">Bu kod barcha qurilmalarda hisobingizni ochadi.<br>Uni eslang yoki yozib qo'ying.</div>
+        <button class="auth-btn" style="margin-top:14px" onclick="enterApp()">Ilovaga kirish →</button>
+      </div>
+    </div>
+
+    <!-- PANEL: Kod bilan kirish -->
+    <div class="auth-panel" id="panelCode">
+      <label class="auth-label" style="text-align:center;display:block;margin-bottom:12px">5 ta raqamli kodingizni kiriting</label>
+      <div class="code-boxes" id="codeBoxes">
+        <input class="code-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" />
+        <input class="code-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" />
+        <input class="code-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" />
+        <input class="code-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" />
+        <input class="code-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" />
+      </div>
+      <button class="auth-btn" id="btnCodeLogin" onclick="loginWithCode()" disabled>Kirish →</button>
+      <button class="auth-btn-ghost" onclick="switchAuthTab('new')">← Yangi hisob ochish</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app-wrapper">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="app-logo">
+      <span class="logo-arabic">🕌</span>
+      <div>
+        <div style="font-weight:800;font-size:16px;letter-spacing:-0.5px">NamozTracker</div>
+        <div class="logo-title">Islomiy Ekotizim</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Tema">🌙</button>
+      <button class="icon-btn" title="Sozlamalar">⚙️</button>
+    </div>
+  </header>
+
+  <!-- HOME PAGE -->
+  <section class="page-section active" id="homePage">
+
+    <!-- Greeting Banner -->
+    <div class="greeting-banner" id="greetingBanner" style="display:none">
+      <div>
+        <div class="greeting-name" id="greetingName">Salom, Foydalanuvchi!</div>
+        <div class="greeting-sub">Alloh ibodat va duolaringizni qabul qilsin 🤲</div>
+      </div>
+      <div class="greeting-code-badge" id="greetingCodeBadge" onclick="copyCode()" title="Nusxalash">·····</div>
+    </div>
+
+    <!-- Date Strip -->
+    <div class="date-strip">
+      <div class="hijri-date" id="hijriDate">٢٤ رجب ١٤٤٦</div>
+      <div class="gregorian-date" id="gregorianDate">Yakshanba, 25-Yanvar 2025</div>
+      <div class="location-tag" onclick="requestLocation()">
+        <span class="location-dot"></span>
+        <span id="locationName">📍 Joylashuvni aniqlash...</span>
+      </div>
+    </div>
+
+    <!-- Next Prayer Hero -->
+    <div class="next-prayer-hero">
+      <div class="hero-label">Keyingi namoz</div>
+      <div class="hero-prayer-name" id="nextPrayerName">Peshin</div>
+      <div class="hero-time" id="nextPrayerTime">13:24</div>
+      <div class="hero-countdown" id="heroCountdown">⏱ 1 soat 23 daqiqada</div>
+      <div class="hero-progress">
+        <div class="hero-progress-bar" id="heroProgressBar" style="width:60%"></div>
+      </div>
+    </div>
+
+    <!-- Prayer Cards -->
+    <div class="prayers-section-title">BUGUNGI NAMOZLAR</div>
+    <div class="prayer-cards" id="prayerCards">
+
+      <div class="prayer-card" id="card-fajr" onclick="openModal('fajr')">
+        <div class="card-icon">🌅</div>
+        <div class="card-arabic">الفجر</div>
+        <div class="card-name">Bomdod</div>
+        <div class="card-time" id="time-fajr">--:--</div>
+        <div class="card-status-badge" id="badge-fajr">Kutilmoqda</div>
+      </div>
+
+      <div class="prayer-card" id="card-dhuhr" onclick="openModal('dhuhr')">
+        <div class="card-icon">☀️</div>
+        <div class="card-arabic">الظهر</div>
+        <div class="card-name">Peshin</div>
+        <div class="card-time" id="time-dhuhr">--:--</div>
+        <div class="card-status-badge" id="badge-dhuhr">Kutilmoqda</div>
+      </div>
+
+      <div class="prayer-card" id="card-asr" onclick="openModal('asr')">
+        <div class="card-icon">🌤️</div>
+        <div class="card-arabic">العصر</div>
+        <div class="card-name">Asr</div>
+        <div class="card-time" id="time-asr">--:--</div>
+        <div class="card-status-badge" id="badge-asr">Kutilmoqda</div>
+      </div>
+
+      <div class="prayer-card" id="card-maghrib" onclick="openModal('maghrib')">
+        <div class="card-icon">🌆</div>
+        <div class="card-arabic">المغرب</div>
+        <div class="card-name">Shom</div>
+        <div class="card-time" id="time-maghrib">--:--</div>
+        <div class="card-status-badge" id="badge-maghrib">Kutilmoqda</div>
+      </div>
+
+      <div class="prayer-card" id="card-isha" onclick="openModal('isha')">
+        <div class="card-icon">🌙</div>
+        <div class="card-arabic">العشاء</div>
+        <div class="card-name">Xufton</div>
+        <div class="card-time" id="time-isha">--:--</div>
+        <div class="card-status-badge" id="badge-isha">Kutilmoqda</div>
+      </div>
+
+    </div>
+
+    <!-- Qazo Balance -->
+    <div class="qaza-section" id="qazaSection">
+      <div class="qaza-header">
+        <div class="qaza-title">⚠️ Qazo Balansi</div>
+        <div class="qaza-badge" id="qazaTotalBadge">0 ta</div>
+      </div>
+      <div class="qaza-grid" id="qazaGrid">
+        <div class="qaza-item empty" id="qaza-fajr">
+          <div class="qaza-item-name">Bomdod</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('fajr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qaza-dhuhr">
+          <div class="qaza-item-name">Peshin</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('dhuhr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qaza-asr">
+          <div class="qaza-item-name">Asr</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('asr')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qaza-maghrib">
+          <div class="qaza-item-name">Shom</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('maghrib')">Tikla</button>
+        </div>
+        <div class="qaza-item empty" id="qaza-isha">
+          <div class="qaza-item-name">Xufton</div>
+          <div class="qaza-item-count">0</div>
+          <button class="qaza-recover-btn" onclick="recoverQaza('isha')">Tikla</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ANALYTICS PAGE -->
+  <section class="page-section" id="analyticsPage">
+
+    <div class="analytics-section">
+      <div class="section-header">
+        <div class="section-title">📊 Statistika</div>
+        <div class="period-tabs">
+          <button class="period-tab active" onclick="setPeriod('week', this)">Hafta</button>
+          <button class="period-tab" onclick="setPeriod('month', this)">Oy</button>
+        </div>
+      </div>
+
+      <!-- Contribution Graph -->
+      <div class="contribution-graph">
+        <div id="contributionGraph"></div>
+        <div class="graph-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.7)"></div>A'lo (5/5)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(34,197,94,0.35)"></div>Yaxshi</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(245,158,11,0.35)"></div>Yomon</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(239,68,68,0.5)"></div>O'qilmadi</div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-cards">
+        <div class="stat-card highlight">
+          <div class="stat-value" id="stat-completion">0%</div>
+          <div class="stat-label">Bajarish darajasi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-perfect">0</div>
+          <div class="stat-label">Mukammal kunlar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-jamaat">0</div>
+          <div class="stat-label">Jamoat</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Ketma-ket kun</div>
+        </div>
+      </div>
+
+      <!-- Weekly Status -->
+      <div class="weekly-status excellent" id="weeklyStatusBadge">
+        ⭐ Haftalik baho: A'lo daraja
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" id="navHome" onclick="showPage('home')">
+      <span class="nav-icon">🏠</span>Asosiy
+    </button>
+    <button class="nav-btn" id="navAnalytics" onclick="showPage('analytics')">
+      <span class="nav-icon">📊</span>Statistika
+    </button>
+    <button class="nav-btn" id="navQaza" onclick="showPage('qaza')">
+      <span class="nav-icon">🔄</span>Qazo
+    </button>
+    <button class="nav-btn" id="navProfile" onclick="showPage('profile')">
+      <span class="nav-icon">👤</span>Profil
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://jccwatxqifmuqjdkdpsm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_5oh6tchGnbmW57VT9JrAHg_ZibyQEvV';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// APP STATE
+// ============================================================
+const state = {
+  prayers: { fajr: null, dhuhr: null, asr: null, maghrib: null, isha: null },
+  statuses: { fajr: 'pending', dhuhr: 'pending', asr: 'pending', maghrib: 'pending', isha: 'pending' },
+  qaza: { fajr: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0 },
+  location: { lat: null, lng: null, city: 'Noma\'lum' },
+  currentModal: null,
+  today: new Date().toISOString().split('T')[0],
+  analyticsData: [],
+  theme: localStorage.getItem('theme') || 'dark',
+  user: null, // { name, code, createdAt }
+};
+
+const PRAYER_NAMES = {
+  fajr:    { uz: 'Bomdod',  ar: 'الفجر',  icon: '🌅' },
+  dhuhr:   { uz: 'Peshin',  ar: 'الظهر',  icon: '☀️' },
+  asr:     { uz: 'Asr',     ar: 'العصر',  icon: '🌤️' },
+  maghrib: { uz: 'Shom',    ar: 'المغرب', icon: '🌆' },
+  isha:    { uz: 'Xufton',  ar: 'العشاء', icon: '🌙' }
+};
+
+const STATUS_LABELS = {
+  pending:           'Kutilmoqda',
+  completed_jamaat:  '🕌 Jamoat',
+  completed_ontime:  '✅ Vaqtida',
+  completed_alone:   '🙏 Yolg\'iz',
+  completed_qaza:    '⏰ Qazo',
+  missed:            '❌ O\'qilmadi',
+  active:            '🔔 Hozir vaqti'
+};
+
+const STATUS_CLASSES = {
+  pending:           '',
+  completed_jamaat:  'done-jamaat',
+  completed_ontime:  'done-ontime',
+  completed_alone:   'done-alone',
+  completed_qaza:    'done-qaza',
+  missed:            'missed'
+};
+
+// ============================================================
+// INIT — Loading screen darhol yashiriladi
+// ============================================================
+
+function hideLoading() {
+  const ls = document.getElementById('loadingScreen');
+  if (ls) ls.classList.add('hidden');
+}
+
+// Fallback: hech nima ishlamasa ham 800ms dan keyin majburiy yashir
+setTimeout(hideLoading, 800);
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.setAttribute('data-theme', state.theme);
+  updateDate();
+  initCodeBoxes();
+  hideLoading(); // DOMContentLoaded bilanoq darhol yashir
+
+  let savedUser = null;
+  try { savedUser = JSON.parse(localStorage.getItem('namoz_user') || 'null'); } catch(e) {}
+
+  if (savedUser && savedUser.code && savedUser.name) {
+    state.user = savedUser;
+    document.getElementById('authOverlay').classList.add('hidden');
+    applyUserGreeting();
+    bootApp();
+  } else {
+    document.getElementById('authOverlay').classList.remove('hidden');
+  }
+});
+
+function bootApp() {
+  loadLocalData();
+  requestLocation();
+  startClock();
+  generateMockAnalytics();
+  renderContributionGraph();
+  renderQazaBalance();
+  registerServiceWorker();
+}
+
+function applyUserGreeting() {
+  const banner = document.getElementById('greetingBanner');
+  const nameEl = document.getElementById('greetingName');
+  const codeEl = document.getElementById('greetingCodeBadge');
+  if (state.user) {
+    banner.style.display = 'flex';
+    nameEl.textContent = `Assalomu alaykum, ${state.user.name}! 👋`;
+    codeEl.textContent = state.user.code;
+  }
+}
+
+function copyCode() {
+  if (!state.user) return;
+  navigator.clipboard.writeText(state.user.code).then(() => {
+    showToast('Kod nusxalandi: ' + state.user.code, 'success');
+  });
+}
+
+// ============================================================
+// DATE
+// ============================================================
+function updateDate() {
+  const now = new Date();
+  const days = ['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+  const months = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+  
+  document.getElementById('gregorianDate').textContent =
+    `${days[now.getDay()]}, ${now.getDate()}-${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+// ============================================================
+// GEOLOCATION
+// ============================================================
+async function requestLocation() {
+  if (!navigator.geolocation) {
+    showToast('Geolokatsiya qo\'llab-quvvatlanmaydi', 'error');
+    loadFallbackTimes();
+    return;
+  }
+  
+  document.getElementById('locationName').textContent = '📍 Aniqlanmoqda...';
+  
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      state.location.lat = pos.coords.latitude;
+      state.location.lng = pos.coords.longitude;
+      
+      localStorage.setItem('lat', state.location.lat);
+      localStorage.setItem('lng', state.location.lng);
+      
+      await fetchPrayerTimes(state.location.lat, state.location.lng);
+      await fetchCityName(state.location.lat, state.location.lng);
+    },
+    (err) => {
+      const saved = { lat: localStorage.getItem('lat'), lng: localStorage.getItem('lng') };
+      if (saved.lat && saved.lng) {
+        state.location.lat = parseFloat(saved.lat);
+        state.location.lng = parseFloat(saved.lng);
+        fetchPrayerTimes(state.location.lat, state.location.lng);
+      } else {
+        showToast('Joylashuv aniqlashda xato. Toshkent vaqtlari ishlatilmoqda', 'info');
+        loadFallbackTimes();
+      }
+    }
+  );
+}
+
+async function fetchCityName(lat, lng) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const d = await r.json();
+    const city = d.address?.city || d.address?.town || d.address?.village || 'Noma\'lum';
+    const country = d.address?.country_code?.toUpperCase() || '';
+    state.location.city = `${city}, ${country}`;
+    document.getElementById('locationName').textContent = `📍 ${city}`;
+  } catch { }
+}
+
+// ============================================================
+// PRAYER TIMES
+// ============================================================
+async function fetchPrayerTimes(lat, lng) {
+  try {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2,'0');
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const yyyy = today.getFullYear();
+    
+    const r = await fetch(`https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=3&school=1`);
+    const d = await r.json();
+    
+    if (d.code === 200) {
+      const t = d.data.timings;
+      state.prayers = {
+        fajr:    t.Fajr,
+        dhuhr:   t.Dhuhr,
+        asr:     t.Asr,
+        maghrib: t.Maghrib,
+        isha:    t.Isha
+      };
+      
+      localStorage.setItem('prayers_' + state.today, JSON.stringify(state.prayers));
+      renderPrayerTimes();
+      updateActivePrayer();
+      showToast('Namoz vaqtlari yangilandi ✓', 'success');
+    }
+  } catch (err) {
+    loadFallbackTimes();
+  }
+}
+
+function loadFallbackTimes() {
+  // Toshkent uchun taxminiy vaqtlar
+  state.prayers = { fajr: '05:15', dhuhr: '13:00', asr: '16:45', maghrib: '19:30', isha: '21:00' };
+  renderPrayerTimes();
+  updateActivePrayer();
+}
+
+function renderPrayerTimes() {
+  for (const [p, time] of Object.entries(state.prayers)) {
+    const el = document.getElementById(`time-${p}`);
+    if (el) el.textContent = time || '--:--';
+  }
+  updateActivePrayer();
+}
+
+// ============================================================
+// ACTIVE PRAYER DETECTION
+// ============================================================
+function updateActivePrayer() {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const prayers = Object.entries(state.prayers);
+  
+  let activePrayer = null;
+  let nextPrayer = null;
+  let nextTime = null;
+  
+  const times = prayers.map(([name, t]) => {
+    if (!t) return { name, min: 0 };
+    const [h, m] = t.split(':').map(Number);
+    return { name, min: h * 60 + m, time: t };
+  });
+  
+  // Active prayer = last prayer whose time has passed
+  for (let i = times.length - 1; i >= 0; i--) {
+    if (times[i].min <= nowMin) { activePrayer = times[i]; break; }
+  }
+  
+  // Next prayer
+  for (const t of times) {
+    if (t.min > nowMin) { nextPrayer = t; break; }
+  }
+  
+  // Update cards
+  for (const [name] of prayers) {
+    const card = document.getElementById(`card-${name}`);
+    if (!card) continue;
+    card.classList.remove('active');
+    
+    // Re-apply status class
+    const s = state.statuses[name];
+    card.className = `prayer-card ${STATUS_CLASSES[s] || ''}`;
+    
+    if (activePrayer?.name === name && s === 'pending') {
+      card.classList.add('active');
+    }
+  }
+  
+  // Update hero
+  if (nextPrayer) {
+    const pInfo = PRAYER_NAMES[nextPrayer.name];
+    document.getElementById('nextPrayerName').textContent = pInfo.uz;
+    document.getElementById('nextPrayerTime').textContent = nextPrayer.time;
+    
+    const diffMin = nextPrayer.min - nowMin;
+    const h = Math.floor(diffMin / 60);
+    const m = diffMin % 60;
+    document.getElementById('heroCountdown').textContent =
+      `⏱ ${h > 0 ? h + ' soat ' : ''}${m} daqiqada`;
+    
+    // Progress bar (from prev prayer to next)
+    if (activePrayer) {
+      const total = nextPrayer.min - activePrayer.min;
+      const elapsed = nowMin - activePrayer.min;
+      const pct = Math.min(100, Math.max(0, (elapsed / total) * 100));
+      document.getElementById('heroProgressBar').style.width = pct + '%';
+    }
+  } else {
+    document.getElementById('nextPrayerName').textContent = 'Bomdod';
+    document.getElementById('heroCountdown').textContent = '⏱ Ertaga';
+  }
+}
+
+// ============================================================
+// PRAYER STATUS MODAL
+// ============================================================
+function openModal(prayer) {
+  state.currentModal = prayer;
+  const info = PRAYER_NAMES[prayer];
+  document.getElementById('modalPrayerName').textContent = `${info.icon} ${info.uz} · ${info.ar}`;
+  document.getElementById('statusModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('statusModal').classList.remove('open');
+  state.currentModal = null;
+}
+
+document.getElementById('statusModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function markPrayer(status) {
+  const prayer = state.currentModal;
+  if (!prayer) return;
+  
+  state.statuses[prayer] = status;
+  
+  // Save to localStorage (offline)
+  const key = `status_${state.today}`;
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  saved[prayer] = status;
+  localStorage.setItem(key, JSON.stringify(saved));
+  
+  // Add to offline sync queue
+  addToSyncQueue({ type: 'mark_prayer', payload: {
+    prayer_name: prayer,
+    prayer_date: state.today,
+    status,
+    completed_at: status !== 'pending' ? new Date().toISOString() : null
+  }});
+  
+  updateCardStatus(prayer, status);
+  closeModal();
+  
+  const msg = status === 'pending' ? 'Bekor qilindi' : `${PRAYER_NAMES[prayer].uz} belgilandi ✓`;
+  showToast(msg, status === 'pending' ? 'info' : 'success');
+  
+  renderQazaBalance();
+  updateActivePrayer();
+}
+
+function updateCardStatus(prayer, status) {
+  const card = document.getElementById(`card-${prayer}`);
+  const badge = document.getElementById(`badge-${prayer}`);
+  
+  if (!card || !badge) return;
+  
+  // Remove all status classes
+  card.className = 'prayer-card';
+  if (STATUS_CLASSES[status]) card.classList.add(STATUS_CLASSES[status]);
+  
+  badge.textContent = STATUS_LABELS[status] || 'Kutilmoqda';
+}
+
+// ============================================================
+// LOCAL DATA MANAGEMENT
+// ============================================================
+function loadLocalData() {
+  // Prayer times cache
+  const cachedPrayers = localStorage.getItem('prayers_' + state.today);
+  if (cachedPrayers) {
+    state.prayers = JSON.parse(cachedPrayers);
+    renderPrayerTimes();
+  }
+  
+  // Prayer statuses
+  const statuses = localStorage.getItem('status_' + state.today);
+  if (statuses) {
+    const parsed = JSON.parse(statuses);
+    Object.assign(state.statuses, parsed);
+    for (const [p, s] of Object.entries(parsed)) {
+      updateCardStatus(p, s);
+    }
+  }
+  
+  // Qaza balance
+  const qaza = localStorage.getItem('qaza_balance');
+  if (qaza) {
+    state.qaza = JSON.parse(qaza);
+    renderQazaBalance();
+  }
+}
+
+function addToSyncQueue(op) {
+  const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
+  queue.push({ ...op, timestamp: new Date().toISOString(), local_id: Date.now().toString() });
+  localStorage.setItem('sync_queue', JSON.stringify(queue));
+  
+  // Try sync if online
+  if (navigator.onLine) trySyncQueue();
+}
+
+async function trySyncQueue() {
+  const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
+  if (!queue.length) return;
+  
+  const token = localStorage.getItem('auth_token');
+  if (!token) return;
+  
+  try {
+    const r = await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ operations: queue })
+    });
+    if (r.ok) {
+      localStorage.setItem('sync_queue', '[]');
+    }
+  } catch { }
+}
+
+window.addEventListener('online', trySyncQueue);
+
+// ============================================================
+// QAZO BALANCE
+// ============================================================
+function renderQazaBalance() {
+  const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  let total = 0;
+  
+  for (const p of prayers) {
+    const count = state.qaza[p] || 0;
+    total += count;
+    const item = document.getElementById(`qaza-${p}`);
+    if (!item) continue;
+    
+    item.querySelector('.qaza-item-count').textContent = count;
+    item.classList.toggle('empty', count === 0);
+  }
+  
+  document.getElementById('qazaTotalBadge').textContent = total + ' ta';
+  document.getElementById('qazaSection').style.display = total > 0 ? 'block' : 'none';
+}
+
+function recoverQaza(prayer) {
+  if (!state.qaza[prayer] || state.qaza[prayer] <= 0) return;
+  
+  state.qaza[prayer]--;
+  localStorage.setItem('qaza_balance', JSON.stringify(state.qaza));
+  
+  addToSyncQueue({ type: 'recover_qaza', payload: { prayer_name: prayer } });
+  
+  renderQazaBalance();
+  showToast(`${PRAYER_NAMES[prayer].uz} qazosi tiklandi 🤲`, 'success');
+}
+
+// ============================================================
+// ANALYTICS
+// ============================================================
+function generateMockAnalytics() {
+  const data = [];
+  const today = new Date();
+  
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    
+    const rand = Math.random();
+    let score = 'failed';
+    if (rand > 0.85) score = 'excellent';
+    else if (rand > 0.6)  score = 'good';
+    else if (rand > 0.35) score = 'poor';
+    
+    const completed = score === 'excellent' ? 5 : score === 'good' ? 4 : score === 'poor' ? 2 : 0;
+    
+    data.push({ date: dateStr, score, completed_count: completed, missed_count: 5 - completed });
+  }
+  
+  state.analyticsData = data;
+  updateStatsCards(data);
+}
+
+function updateStatsCards(data) {
+  const total = data.reduce((a, b) => a + b.completed_count, 0);
+  const possible = data.length * 5;
+  const pct = possible > 0 ? Math.round(total / possible * 100) : 0;
+  const perfect = data.filter(d => d.score === 'excellent').length;
+  
+  document.getElementById('stat-completion').textContent = pct + '%';
+  document.getElementById('stat-perfect').textContent = perfect;
+  document.getElementById('stat-jamaat').textContent = Math.floor(total * 0.4);
+  
+  // Streak
+  let streak = 0;
+  for (let i = data.length - 1; i >= 0; i--) {
+    if (data[i].score === 'excellent' || data[i].score === 'good') streak++;
+    else break;
+  }
+  document.getElementById('stat-streak').textContent = streak;
+  
+  // Weekly status
+  const recent = data.slice(-7);
+  const recentPct = recent.reduce((a, b) => a + b.completed_count, 0) / (recent.length * 5);
+  const statusEl = document.getElementById('weeklyStatusBadge');
+  statusEl.className = 'weekly-status';
+  if (recentPct >= 0.95) {
+    statusEl.classList.add('excellent');
+    statusEl.textContent = '⭐ Haftalik baho: A\'lo daraja';
+  } else if (recentPct >= 0.7) {
+    statusEl.classList.add('good');
+    statusEl.textContent = '✅ Haftalik baho: Yaxshi';
+  } else {
+    statusEl.classList.add('poor');
+    statusEl.textContent = '⚠️ Haftalik baho: Yaxshilash kerak';
+  }
+}
+
+function renderContributionGraph(period = 'week') {
+  const graphEl = document.getElementById('contributionGraph');
+  const days = period === 'month' ? 30 : 7;
+  const data = state.analyticsData.slice(-days);
+  const todayStr = new Date().toISOString().split('T')[0];
+  
+  if (period === 'week') {
+    // Week view - horizontal
+    graphEl.style.display = 'flex';
+    graphEl.style.gap = '6px';
+    graphEl.style.flexWrap = 'wrap';
+    
+    graphEl.innerHTML = data.map(d => {
+      const isToday = d.date === todayStr;
+      return `<div class="graph-cell score-${d.score} ${isToday ? 'today' : ''}"
+        title="${d.date}: ${d.completed_count}/5 namoz | ${d.score}"
+        style="flex:1;min-width:36px;height:60px;border-radius:10px;font-size:11px;">
+        <div style="text-align:center;line-height:1.3">
+          <div style="font-size:16px">${d.completed_count}</div>
+          <div style="font-size:9px;opacity:0.7">${getDayLabel(d.date)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    // Month view - grid
+    graphEl.style.display = 'grid';
+    graphEl.style.gridTemplateColumns = 'repeat(7, 1fr)';
+    graphEl.style.gap = '4px';
+    
+    graphEl.innerHTML = data.map(d => {
+      const isToday = d.date === todayStr;
+      return `<div class="graph-cell score-${d.score} ${isToday ? 'today' : ''}"
+        title="${d.date}: ${d.completed_count}/5 namoz"
+        style="aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">
+        ${d.completed_count}
+      </div>`;
+    }).join('');
+  }
+}
+
+function getDayLabel(dateStr) {
+  const days = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  return days[new Date(dateStr).getDay()];
+}
+
+function setPeriod(period, btn) {
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderContributionGraph(period);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  
+  if (page === 'home') {
+    document.getElementById('homePage').classList.add('active');
+    document.getElementById('navHome').classList.add('active');
+  } else if (page === 'analytics') {
+    document.getElementById('analyticsPage').classList.add('active');
+    document.getElementById('navAnalytics').classList.add('active');
+    renderContributionGraph();
+  }
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function startClock() {
+  updateActivePrayer();
+  setInterval(updateActivePrayer, 30000); // 30 soniyada yangilash
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.theme);
+  localStorage.setItem('theme', state.theme);
+  const btn = document.querySelector('.icon-btn[onclick="toggleTheme()"]');
+  if (btn) btn.textContent = state.theme === 'dark' ? '🌙' : '☀️';
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// ============================================================
+// SERVICE WORKER (PWA)
+// ============================================================
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('SW ro\'yxatga olindi:', reg.scope);
+    }).catch(err => {
+      console.log('SW xato:', err);
+    });
+  }
+}
+
+// Daily midnight reset check
+function checkMidnightReset() {
+  const lastReset = localStorage.getItem('last_reset');
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (lastReset !== today) {
+    // Kechagi pending namozlarni missed ga o'tkazish
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yStr = yesterday.toISOString().split('T')[0];
+    
+    const yStatuses = JSON.parse(localStorage.getItem('status_' + yStr) || '{}');
+    let qazaAdded = { fajr:0, dhuhr:0, asr:0, maghrib:0, isha:0 };
+    
+    for (const [p, s] of Object.entries(yStatuses)) {
+      if (s === 'pending') {
+        yStatuses[p] = 'missed';
+        qazaAdded[p]++;
+      }
+    }
+    
+    localStorage.setItem('status_' + yStr, JSON.stringify(yStatuses));
+    
+    // Qazo balansiga qo'shish
+    const currentQaza = JSON.parse(localStorage.getItem('qaza_balance') || '{"fajr":0,"dhuhr":0,"asr":0,"maghrib":0,"isha":0}');
+    for (const p of Object.keys(currentQaza)) {
+      currentQaza[p] += qazaAdded[p] || 0;
+    }
+    localStorage.setItem('qaza_balance', JSON.stringify(currentQaza));
+    state.qaza = currentQaza;
+    
+    localStorage.setItem('last_reset', today);
+    renderQazaBalance();
+  }
+}
+
+checkMidnightReset();
+setInterval(checkMidnightReset, 60000); // Har daqiqa tekshirish
+
+// ============================================================
+// AUTH — SUPABASE KOD TIZIMI
+// ============================================================
+
+async function generateUniqueCode() {
+  // 5 raqamli unikal kod — bazada yo'qligini tekshiradi
+  let code, exists = true;
+  while (exists) {
+    code = String(Math.floor(10000 + Math.random() * 90000));
+    const { data } = await db.from('profiles').select('user_code').eq('user_code', code).single();
+    exists = !!data;
+  }
+  return code;
+}
+
+async function createAccount() {
+  const nameInput = document.getElementById('inputName');
+  const name = nameInput.value.trim();
+
+  if (!name || name.length < 2) {
+    nameInput.style.borderColor = 'var(--red)';
+    nameInput.placeholder = 'Kamida 2 ta harf kiriting!';
+    setTimeout(() => { nameInput.style.borderColor = ''; }, 2000);
+    return;
+  }
+
+  const btn = document.getElementById('btnCreateAccount');
+  btn.disabled = true;
+  btn.textContent = '⏳ Yaratilmoqda...';
+
+  try {
+    const code = await generateUniqueCode();
+
+    // Supabase ga saqlash
+    const { error } = await db.from('profiles').insert({
+      full_name: name,
+      user_code: code,
+      language: 'uz',
+      theme: state.theme
+    });
+
+    if (error) throw error;
+
+    // Qazo balansi yaratish
+    await db.from('qaza_balance').insert({ user_code: code });
+
+    const user = { name, code, createdAt: new Date().toISOString() };
+    localStorage.setItem('namoz_user', JSON.stringify(user));
+    state.user = user;
+
+    // UI: kod ko'rsatish
+    btn.style.display = 'none';
+    nameInput.disabled = true;
+    document.getElementById('generatedCodeWrap').style.display = 'block';
+    animateCodeReveal(code);
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Boshlash →';
+    showToast('Xato: ' + err.message, 'error');
+  }
+}
+
+function animateCodeReveal(code) {
+  const el = document.getElementById('generatedCodeDisplay');
+  el.textContent = '· · · · ·';
+  let i = 0;
+  const chars = code.split('');
+  const interval = setInterval(() => {
+    const shown = chars.slice(0, i + 1).join(' ');
+    const dots = Array(chars.length - i - 1).fill('·').join(' ');
+    el.textContent = shown + (dots ? ' ' + dots : '');
+    i++;
+    if (i >= chars.length) clearInterval(interval);
+  }, 220);
+}
+
+function enterApp() {
+  document.getElementById('authOverlay').classList.add('hidden');
+  applyUserGreeting();
+  bootApp();
+}
+
+async function loginWithCode() {
+  const boxes = document.querySelectorAll('#codeBoxes .code-box');
+  const code = Array.from(boxes).map(b => b.value).join('');
+  if (code.length !== 5) return;
+
+  const btn = document.getElementById('btnCodeLogin');
+  btn.disabled = true;
+  btn.textContent = '⏳ Tekshirilmoqda...';
+
+  try {
+    // Supabase dan kod bilan foydalanuvchini topish
+    const { data: profile, error } = await db
+      .from('profiles')
+      .select('*')
+      .eq('user_code', code)
+      .single();
+
+    if (error || !profile) {
+      boxes.forEach(b => {
+        b.style.borderColor = 'var(--red)';
+        b.style.boxShadow = '0 0 0 3px var(--red-dim)';
+      });
+      showToast('❌ Kod topilmadi. Tekshirib qayta kiriting.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Kirish →';
+      setTimeout(() => boxes.forEach(b => { b.style.borderColor = ''; b.style.boxShadow = ''; }), 2000);
+      return;
+    }
+
+    const user = { name: profile.full_name, code: profile.user_code, createdAt: profile.created_at };
+    localStorage.setItem('namoz_user', JSON.stringify(user));
+    state.user = user;
+
+    // Bugungi statuslarni bazadan yuklash
+    await loadTodayStatusesFromDB(code);
+
+    // Qazo balansini bazadan yuklash
+    await loadQazaFromDB(code);
+
+    // Animatsiya
+    boxes.forEach(b => {
+      b.style.borderColor = 'var(--green)';
+      b.style.boxShadow = '0 0 0 3px var(--green-dim)';
+    });
+
+    setTimeout(() => {
+      document.getElementById('authOverlay').classList.add('hidden');
+      applyUserGreeting();
+      bootApp();
+      showToast(`Xush kelibsiz, ${profile.full_name}! 🤲`, 'success');
+    }, 600);
+
+  } catch (err) {
+    showToast('Xato: ' + err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Kirish →';
+  }
+}
+
+// Bugungi namoz statuslarini DB dan yuklash
+async function loadTodayStatusesFromDB(code) {
+  try {
+    const { data } = await db
+      .from('daily_prayers')
+      .select('prayer_name, status')
+      .eq('user_code', code)
+      .eq('prayer_date', state.today);
+
+    if (data && data.length > 0) {
+      const statuses = {};
+      data.forEach(p => { statuses[p.prayer_name] = p.status; });
+      Object.assign(state.statuses, statuses);
+      localStorage.setItem('status_' + state.today, JSON.stringify(statuses));
+      for (const [p, s] of Object.entries(statuses)) updateCardStatus(p, s);
+    }
+  } catch (e) { console.log('Status yuklash xatosi:', e); }
+}
+
+// Qazo balansini DB dan yuklash
+async function loadQazaFromDB(code) {
+  try {
+    const { data } = await db
+      .from('qaza_balance')
+      .select('*')
+      .eq('user_code', code)
+      .single();
+
+    if (data) {
+      state.qaza = {
+        fajr: data.fajr_debt || 0,
+        dhuhr: data.dhuhr_debt || 0,
+        asr: data.asr_debt || 0,
+        maghrib: data.maghrib_debt || 0,
+        isha: data.isha_debt || 0
+      };
+      localStorage.setItem('qaza_balance', JSON.stringify(state.qaza));
+    }
+  } catch (e) { console.log('Qazo yuklash xatosi:', e); }
+}
+
+// Namoz statusini DB ga saqlash
+async function savePrayerToDB(prayer, status) {
+  if (!state.user) return;
+  try {
+    await db.from('daily_prayers').upsert({
+      user_code: state.user.code,
+      prayer_date: state.today,
+      prayer_name: prayer,
+      status: status,
+      completed_at: status !== 'pending' ? new Date().toISOString() : null,
+      last_modified: new Date().toISOString(),
+      synced: true
+    }, { onConflict: 'user_code,prayer_date,prayer_name' });
+  } catch (e) { console.log('Saqlash xatosi:', e); }
+}
+
+// Qazo balansini DB ga saqlash
+async function saveQazaToDB() {
+  if (!state.user) return;
+  try {
+    await db.from('qaza_balance').upsert({
+      user_code: state.user.code,
+      fajr_debt: state.qaza.fajr,
+      dhuhr_debt: state.qaza.dhuhr,
+      asr_debt: state.qaza.asr,
+      maghrib_debt: state.qaza.maghrib,
+      isha_debt: state.qaza.isha,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_code' });
+  } catch (e) { console.log('Qazo saqlash xatosi:', e); }
+}
+
+// ============================================================
+// AUTH — UI YORDAMCHI FUNKSIYALAR
+// ============================================================
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+
+  if (tab === 'new') {
+    document.getElementById('tabNew').classList.add('active');
+    document.getElementById('panelNew').classList.add('active');
+  } else {
+    document.getElementById('tabCode').classList.add('active');
+    document.getElementById('panelCode').classList.add('active');
+    // Birinchi code-box ga focus
+    setTimeout(() => document.querySelector('.code-box')?.focus(), 100);
+  }
+}
+
+function initCodeBoxes() {
+  const boxes = document.querySelectorAll('#codeBoxes .code-box');
+  const loginBtn = document.getElementById('btnCodeLogin');
+
+  boxes.forEach((box, idx) => {
+    box.addEventListener('input', (e) => {
+      // Faqat raqam qabul qil
+      box.value = box.value.replace(/\D/g, '').slice(0, 1);
+      if (box.value && idx < boxes.length - 1) boxes[idx + 1].focus();
+
+      // Barcha to'ldirilganda tugmani faollashtir
+      const filled = Array.from(boxes).every(b => b.value.length === 1);
+      loginBtn.disabled = !filled;
+    });
+
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !box.value && idx > 0) {
+        boxes[idx - 1].focus();
+        boxes[idx - 1].value = '';
+        loginBtn.disabled = true;
+      }
+      if (e.key === 'Enter') loginWithCode();
+    });
+
+    // Paste qo'llab-quvvatlash (5 raqamni bir paytda paste qilish)
+    box.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 5);
+      pasted.split('').forEach((ch, i) => { if (boxes[i]) boxes[i].value = ch; });
+      const filled = Array.from(boxes).every(b => b.value.length === 1);
+      loginBtn.disabled = !filled;
+      if (pasted.length >= 5) loginBtn.focus();
+    });
+  });
+
+  // Enter pressed on name input
+  document.getElementById('inputName')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') createAccount();
+  });
+}
+</script>
+</body>
+</html>
