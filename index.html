@@ -19,13 +19,13 @@
    DESIGN TOKENS — iOS / iPhone Uslubi (Islomiy Rang)
    ============================================================ */
 :root {
-  /* iOS-style backgrounds */
-  --bg-void:    #000000;
-  --bg-base:    #0a0a0f;
-  --bg-surface: #111118;
-  --bg-raised:  #1c1c28;
-  --bg-hover:   #252535;
-  --bg-card:    rgba(28,28,40,0.92);
+  /* iOS-style backgrounds — slightly warmer dark */
+  --bg-void:    #08080f;
+  --bg-base:    #0c0c14;
+  --bg-surface: #121220;
+  --bg-raised:  #1a1a2a;
+  --bg-hover:   #242438;
+  --bg-card:    rgba(26,26,40,0.93);
 
   /* Gold accent */
   --gold:       #d4a84b;
@@ -47,18 +47,18 @@
   --purple:     #bf5af2;
 
   --text-primary:   #ffffff;
-  --text-secondary: rgba(255,255,255,0.6);
-  --text-muted:     rgba(255,255,255,0.3);
+  --text-secondary: rgba(255,255,255,0.58);
+  --text-muted:     rgba(255,255,255,0.28);
 
   /* iOS glass */
-  --glass-bg:     rgba(28,28,40,0.78);
+  --glass-bg:     rgba(26,26,40,0.8);
   --glass-border: rgba(255,255,255,0.08);
   --glass-blur:   blur(40px) saturate(180%);
 
   --font-arabic: 'Amiri', serif;
   --font-ui:     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Nunito', sans-serif;
 
-  --shadow-card:  0 8px 32px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06) inset;
+  --shadow-card:  0 8px 32px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.05) inset;
   --shadow-gold:  0 4px 24px rgba(212,168,75,0.18);
 
   --radius-xl:  22px;
@@ -278,71 +278,90 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(212,168,75,0.5), transparent);
 }
 
-.arch-deco { display: none; }
+.arch-deco {
+  position: absolute;
+  top: 0;
+  width: 60px; height: 60px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+.arch-deco.left  { left: 12px;  }
+.arch-deco.right { right: 12px; transform: scaleX(-1); }
+/* Islamic 8-pointed star via clip/svg bg */
+.arch-deco::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpolygon points='30,2 36,22 56,22 40,34 46,54 30,42 14,54 20,34 4,22 24,22' fill='%23d4a84b'/%3E%3C/svg%3E") no-repeat center/contain;
+}
 
 .hero-label {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 8px;
+  color: rgba(255,255,255,0.38);
+  margin-bottom: 6px;
 }
 
 .hero-prayer-name {
   font-family: var(--font-arabic);
-  font-size: 38px;
+  font-size: 40px;
   color: var(--gold);
   margin-bottom: 4px;
   line-height: 1.15;
-  filter: drop-shadow(0 0 20px rgba(212,168,75,0.4));
+  filter: drop-shadow(0 0 20px rgba(212,168,75,0.5));
 }
 
 .hero-time {
-  font-size: 60px;
+  font-size: 62px;
   font-weight: 200;
-  letter-spacing: -2px;
+  letter-spacing: -3px;
   color: #ffffff;
   font-family: -apple-system, 'SF Pro Display', sans-serif;
   line-height: 1;
   margin-bottom: 4px;
+  text-shadow: 0 2px 20px rgba(255,255,255,0.1);
 }
 
 .hero-countdown {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.55);
   margin-top: 8px;
   background: rgba(255,255,255,0.07);
-  border-radius: var(--radius-pill);
-  padding: 5px 14px;
+  border-radius: 20px;
+  padding: 5px 16px;
   display: inline-block;
+  border: 0.5px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
 }
 
 .hero-progress {
-  margin-top: 20px;
-  height: 3px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 2px;
+  margin-top: 14px;
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
   width: 100%;
   overflow: visible;
   position: relative;
 }
 .hero-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-light));
-  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(212,168,75,0.4), var(--gold), #ffe88a);
+  border-radius: 3px;
   transition: width 60s linear;
   position: relative;
+  box-shadow: 0 0 12px rgba(212,168,75,0.5);
 }
 .hero-progress-bar::after {
   content: '';
   position: absolute;
-  right: -4px; top: -4px;
-  width: 10px; height: 10px;
+  right: -5px; top: -5px;
+  width: 14px; height: 14px;
   border-radius: 50%;
-  background: var(--gold-light);
-  box-shadow: 0 0 8px var(--gold-glow);
+  background: radial-gradient(circle, #fff9c4, var(--gold));
+  box-shadow: 0 0 10px rgba(212,168,75,0.8), 0 0 20px rgba(212,168,75,0.3);
 }
 
 
@@ -637,16 +656,18 @@ body::after {
 .status-modal-overlay.open { opacity: 1; pointer-events: all; }
 
 .status-modal {
-  background: rgba(28,28,40,0.95);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  background: rgba(18,18,28,0.97);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
   border: 0.5px solid rgba(255,255,255,0.1);
-  border-radius: 22px 22px 0 0;
-  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  border-top: 0.5px solid rgba(212,168,75,0.2);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
   width: 100%;
   max-width: 430px;
   transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -4px 40px rgba(0,0,0,0.5);
 }
 .status-modal-overlay.open .status-modal { transform: translateY(0); }
 
@@ -656,7 +677,7 @@ body::after {
   display: block;
   width: 36px; height: 4px;
   border-radius: 2px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.18);
   margin: 0 auto 16px;
 }
 
@@ -665,32 +686,35 @@ body::after {
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   padding-bottom: 12px;
-  border-bottom: 0.5px solid var(--glass-border);
+  border-bottom: 0.5px solid rgba(255,255,255,0.07);
 }
 
-.status-options { display: flex; flex-direction: column; gap: 6px; }
+.status-options { display: flex; flex-direction: column; gap: 7px; }
 
 .status-option {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: rgba(255,255,255,0.06);
+  padding: 15px 16px;
+  border-radius: 16px;
+  border: 0.5px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.05);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s cubic-bezier(0.34,1.2,0.64,1);
   font-size: 15px;
   font-family: var(--font-ui);
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 600;
   -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-.status-option:active { background: rgba(255,255,255,0.12); transform: scale(0.98); }
-.status-option.cancel { color: var(--red); justify-content: center; font-weight: 600; margin-top: 4px; }
-.status-option .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.status-option:active { background: rgba(255,255,255,0.1); transform: scale(0.97); }
+.status-option.cancel { color: var(--red); justify-content: center; font-weight: 700; margin-top: 4px;
+  border-color: rgba(255,69,58,0.2); background: rgba(255,69,58,0.06); }
+.status-option .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px currentColor; }
 
 /* ============================================================
    TOAST — iOS notification style
@@ -710,16 +734,16 @@ body::after {
   pointer-events: none;
 }
 .toast {
-  padding: 12px 18px;
-  border-radius: var(--radius-pill);
+  padding: 11px 18px;
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
-  background: rgba(40,40,55,0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 0.5px solid rgba(255,255,255,0.12);
+  background: rgba(30,30,44,0.96);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 0.5px solid rgba(255,255,255,0.13);
   color: var(--text-primary);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.07) inset;
   animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
   width: fit-content;
   max-width: 100%;
@@ -1073,35 +1097,36 @@ body::after {
 }
 .qaza-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; }
 .qaza-item {
-  background: rgba(255,255,255,0.04);
-  border-radius: var(--radius-md);
-  padding: 12px 6px; text-align: center;
-  border: 0.5px solid rgba(255,255,255,0.06);
-  transition: all 0.2s;
+  background: linear-gradient(145deg, rgba(26,26,40,0.95), rgba(18,18,30,0.9));
+  border-radius: 18px;
+  padding: 14px 6px; text-align: center;
+  border: 0.5px solid rgba(255,255,255,0.07);
+  transition: all 0.22s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 .qaza-item-name { font-size: 9px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; }
-.qaza-item-count { font-size: 22px; font-weight: 800; color: var(--red); margin: 5px 0; font-feature-settings: 'tnum'; }
+.qaza-item-count { font-size: 24px; font-weight: 900; color: var(--red); margin: 5px 0; font-feature-settings: 'tnum'; text-shadow: 0 0 12px rgba(255,69,58,0.4); }
 .qaza-recover-btn {
-  padding: 4px 8px; border-radius: var(--radius-pill);
+  padding: 5px 10px; border-radius: 12px;
   border: 0.5px solid rgba(255,69,58,0.3);
   background: rgba(255,69,58,0.1); color: var(--red);
   font-size: 9px; font-weight: 700; cursor: pointer;
-  font-family: var(--font-ui); transition: all 0.15s;
+  font-family: var(--font-ui); transition: all 0.18s;
   -webkit-tap-highlight-color: transparent;
 }
-.qaza-recover-btn:active { transform: scale(0.92); background: rgba(255,69,58,0.22); }
-.qaza-item.empty .qaza-item-count { color: var(--green); }
+.qaza-recover-btn:active { transform: scale(0.9); background: rgba(255,69,58,0.22); }
+.qaza-item.empty .qaza-item-count { color: var(--green); text-shadow: 0 0 12px rgba(48,209,88,0.4); }
 .qaza-item.empty .qaza-recover-btn { display: none; }
 
 /* ============================================================
    ANALYTICS — stat blocks
    ============================================================ */
 .stat-block {
-  background: var(--bg-card);
+  background: linear-gradient(145deg, rgba(26,26,40,0.94), rgba(18,18,30,0.9));
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 0.5px solid var(--glass-border);
-  border-radius: var(--radius-xl);
+  border: 0.5px solid rgba(255,255,255,0.07);
+  border-radius: 22px;
   padding: 18px;
   box-shadow: var(--shadow-card);
   animation: fadeUp 0.5s ease both;
@@ -1116,8 +1141,8 @@ body::after {
 .stats-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
 .stat-card {
   background: rgba(255,255,255,0.04);
-  border: 0.5px solid rgba(255,255,255,0.06);
-  border-radius: var(--radius-lg);
+  border: 0.5px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
   padding: 16px;
   text-align: center;
 }
@@ -1228,16 +1253,21 @@ body::after {
 .auth-input-wrap { margin-bottom: 14px; }
 .auth-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: block; }
 .auth-input {
-  width: 100%; padding: 14px 16px;
-  border-radius: var(--radius-lg);
-  border: 0.5px solid rgba(255,255,255,0.1);
+  width: 100%; padding: 15px 16px;
+  border-radius: 16px;
+  border: 0.5px solid rgba(255,255,255,0.09);
   background: rgba(255,255,255,0.06);
   color: var(--text-primary); font-family: var(--font-ui);
   font-size: 16px; font-weight: 500; outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.22s;
   -webkit-appearance: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
-.auth-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.08); }
+.auth-input:focus {
+  border-color: rgba(212,168,75,0.5);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 3px rgba(212,168,75,0.12), 0 2px 8px rgba(0,0,0,0.2);
+}
 .auth-input::placeholder { color: var(--text-muted); font-weight: 400; }
 
 .generated-code-wrap {
@@ -1263,18 +1293,29 @@ body::after {
 .code-box:focus { border-color: var(--gold); background: rgba(212,168,75,0.08); }
 
 .auth-btn {
-  width: 100%; padding: 16px; border-radius: var(--radius-xl);
+  width: 100%; padding: 17px; border-radius: 18px;
   border: none;
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, #a07020 100%);
-  color: #0a0800; font-family: var(--font-ui); font-size: 16px; font-weight: 800;
-  cursor: pointer; transition: all 0.2s; letter-spacing: -0.2px; margin-top: 4px;
+  background: linear-gradient(135deg, #f0c93a 0%, var(--gold) 50%, #b07d18 100%);
+  color: #0a0800; font-family: var(--font-ui); font-size: 16px; font-weight: 900;
+  cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.3,0.64,1); letter-spacing: 0.2px; margin-top: 4px;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 20px rgba(212,168,75,0.4), 0 1px 0 rgba(255,255,255,0.3) inset;
+  position: relative; overflow: hidden;
 }
-.auth-btn:active { transform: scale(0.97); filter: brightness(1.1); }
+.auth-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent);
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+}
+.auth-btn:active { transform: scale(0.96); box-shadow: 0 2px 10px rgba(212,168,75,0.3); }
 .auth-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .auth-btn-ghost {
-  width: 100%; padding: 13px; border-radius: var(--radius-xl);
+  width: 100%; padding: 14px; border-radius: 16px;
   border: 0.5px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.05); color: var(--text-secondary);
   font-family: var(--font-ui); font-size: 14px; font-weight: 600;
@@ -4580,10 +4621,15 @@ function showPage(page) {
     document.getElementById('navQaza').classList.add('active');
     renderQazaPage();
   } else if (page === 'zikr') {
-    // Show zikr widget in a dedicated page view
     const zp = document.getElementById('zikrPage');
-    if (zp) { zp.classList.add('active'); document.getElementById('navZikr').classList.add('active'); }
-    else { document.getElementById('homePage').classList.add('active'); document.getElementById('navHome').classList.add('active'); }
+    if (zp) {
+      zp.classList.add('active');
+      document.getElementById('navZikr').classList.add('active');
+      renderZikrPage();
+    } else {
+      document.getElementById('homePage').classList.add('active');
+      document.getElementById('navHome').classList.add('active');
+    }
   } else if (page === 'profile') {
     document.getElementById('profilePage').classList.add('active');
     document.getElementById('navProfile').classList.add('active');
@@ -4604,6 +4650,88 @@ function renderQazaPage() {
   });
   const badge = document.getElementById('qazaPageTotalBadge');
   if (badge) badge.textContent = total + ' ta';
+}
+
+function renderZikrPage() {
+  const container = document.getElementById('zikrPageContent');
+  if (!container) return;
+
+  const ZIKRS = [
+    { ar: 'سُبْحَانَ اللَّهِ', uz: 'Subhanalloh', target: 33 },
+    { ar: 'الْحَمْدُ لِلَّهِ', uz: 'Alhamdulillah', target: 33 },
+    { ar: 'اللَّهُ أَكْبَرُ', uz: 'Allohu Akbar', target: 33 },
+    { ar: 'لَا إِلَٰهَ إِلَّا اللَّهُ', uz: 'La ilaha illalloh', target: 100 },
+    { ar: 'أَسْتَغْفِرُ اللَّهَ', uz: 'Astag\'firulloh', target: 100 },
+  ];
+
+  const saved = JSON.parse(localStorage.getItem('zikr_counts_' + state.today) || '{}');
+
+  container.innerHTML = ZIKRS.map((z, i) => {
+    const count = saved[i] || 0;
+    const pct = Math.min(100, Math.round(count / z.target * 100));
+    return `
+    <div style="background:linear-gradient(145deg,rgba(28,28,44,0.92),rgba(20,20,34,0.88));
+      border:0.5px solid rgba(212,168,75,${count >= z.target ? '0.4' : '0.12'});
+      border-radius:22px;padding:18px;margin-bottom:12px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4)${count >= z.target ? ',0 0 20px rgba(212,168,75,0.15)' : ''};
+      transition:all 0.3s;" id="zikrCard_${i}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div style="font-family:var(--font-arabic);font-size:20px;color:var(--gold);margin-bottom:3px;
+            filter:drop-shadow(0 0 6px rgba(212,168,75,0.3));">${z.ar}</div>
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;">${z.uz}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:900;color:${count >= z.target ? 'var(--gold)' : 'var(--text-primary)'};
+            font-feature-settings:'tnum';">${count}</div>
+          <div style="font-size:10px;color:var(--text-muted);">/ ${z.target}</div>
+        </div>
+      </div>
+      <!-- Progress bar -->
+      <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;margin-bottom:12px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${count >= z.target ?
+          'linear-gradient(90deg,var(--gold),#fff9c4)' :
+          'linear-gradient(90deg,var(--gold),rgba(212,168,75,0.5))'};
+          border-radius:2px;transition:width 0.4s;"></div>
+      </div>
+      <!-- Buttons row -->
+      <div style="display:flex;gap:8px;">
+        <button onclick="tapZikr(${i},1)" style="flex:3;padding:14px;border-radius:16px;
+          border:1px solid rgba(212,168,75,${count >= z.target ? '0.5' : '0.25'});
+          background:${count >= z.target ? 'rgba(212,168,75,0.2)' : 'rgba(212,168,75,0.1)'};
+          color:var(--gold);font-size:16px;font-weight:800;cursor:pointer;
+          transition:all 0.15s;-webkit-tap-highlight-color:transparent;letter-spacing:1px;"
+          >+1</button>
+        <button onclick="tapZikr(${i},-1)" style="flex:1;padding:14px;border-radius:16px;
+          border:0.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);
+          color:var(--text-muted);font-size:14px;cursor:pointer;
+          transition:all 0.15s;-webkit-tap-highlight-color:transparent;">−</button>
+        <button onclick="resetZikr(${i})" style="flex:1;padding:14px;border-radius:16px;
+          border:0.5px solid rgba(255,69,58,0.2);background:rgba(255,69,58,0.06);
+          color:rgba(255,69,58,0.7);font-size:12px;cursor:pointer;
+          transition:all 0.15s;-webkit-tap-highlight-color:transparent;">↺</button>
+      </div>
+      ${count >= z.target ? `<div style="text-align:center;margin-top:8px;font-size:11px;
+        color:var(--gold);font-weight:700;letter-spacing:1.5px;">✨ BAJARILDI</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function tapZikr(idx, delta) {
+  const TARGETS = [33,33,33,100,100];
+  const saved = JSON.parse(localStorage.getItem('zikr_counts_' + state.today) || '{}');
+  saved[idx] = Math.max(0, (saved[idx] || 0) + delta);
+  localStorage.setItem('zikr_counts_' + state.today, JSON.stringify(saved));
+  if (navigator.vibrate) navigator.vibrate(8);
+  renderZikrPage();
+  if (saved[idx] === TARGETS[idx]) showToast('✨ Bajarildi! Tabriklaymiz', 'success');
+}
+
+function resetZikr(idx) {
+  const saved = JSON.parse(localStorage.getItem('zikr_counts_' + state.today) || '{}');
+  saved[idx] = 0;
+  localStorage.setItem('zikr_counts_' + state.today, JSON.stringify(saved));
+  renderZikrPage();
 }
 
 function renderProfilePage() {
