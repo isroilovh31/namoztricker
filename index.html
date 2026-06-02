@@ -3086,15 +3086,6 @@ body { -webkit-overflow-scrolling: touch; }
       </div>
     </div>
 
-    <!-- Ilovalar haqida -->
-    <div style="background:var(--bg-raised);border-radius:16px;padding:16px;margin-bottom:12px;">
-      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">ℹ️ Ilova haqida</div>
-      <div style="font-size:12px;color:var(--text-muted);line-height:1.7;">
-        <div style="display:flex;justify-content:space-between;"><span>Versiya</span><span style="color:var(--gold);font-weight:700;">1.0.0</span></div>
-        <div style="display:flex;justify-content:space-between;margin-top:4px;"><span>Hisoblash usuli</span><span style="color:var(--text-secondary);">Hanafi</span></div>
-      </div>
-    </div>
-
     <div class="status-option cancel" onclick="closeSettingsModal()">✕ Yopish</div>
   </div>
 </div>
@@ -3102,6 +3093,45 @@ body { -webkit-overflow-scrolling: touch; }
 <div class="status-modal-overlay" id="statusModal">
   <div class="status-modal">
     <div class="modal-title" id="modalPrayerName">Bomdod Namozi</div>
+
+    <!-- AZON DEMO BLOK -->
+    <div id="azonDemoBlock" style="
+      background:linear-gradient(135deg,rgba(212,168,75,0.13),rgba(212,168,75,0.04));
+      border:0.5px solid rgba(212,168,75,0.28);
+      border-radius:18px;padding:14px 16px;margin-bottom:10px;">
+      <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+        color:var(--gold);font-weight:700;margin-bottom:10px;">🔊 Azon</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="azonPlayBtn" onclick="playAzonDemo()" style="
+          flex:1;padding:12px 10px;border-radius:14px;
+          border:1px solid rgba(212,168,75,0.35);
+          background:rgba(212,168,75,0.14);
+          color:var(--gold);font-size:13px;font-weight:800;
+          cursor:pointer;-webkit-tap-highlight-color:transparent;
+          transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:7px;">
+          <span id="azonPlayIcon">▶️</span>
+          <span id="azonPlayLabel">Azon eshitish</span>
+        </button>
+        <button onclick="stopAzonDemo()" style="
+          padding:12px 14px;border-radius:14px;
+          border:0.5px solid rgba(255,255,255,0.1);
+          background:rgba(255,255,255,0.05);
+          color:var(--text-muted);font-size:13px;font-weight:700;
+          cursor:pointer;-webkit-tap-highlight-color:transparent;
+          transition:all 0.18s;">⏹</button>
+      </div>
+      <!-- Azon progress -->
+      <div id="azonProgress" style="display:none;margin-top:10px;">
+        <div style="height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;">
+          <div id="azonProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#ffe88a);border-radius:2px;transition:width 0.5s linear;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;">
+          <div id="azonCurrentText" style="font-size:12px;color:var(--gold);font-family:var(--font-arabic);"></div>
+          <div id="azonTimer" style="font-size:11px;color:var(--text-muted);font-feature-settings:'tnum';">0:00</div>
+        </div>
+      </div>
+    </div>
+
     <div class="status-options">
       <div class="status-option" onclick="markPrayer('completed_jamaat')">
         <span class="dot" style="background:var(--green)"></span>
@@ -4012,6 +4042,9 @@ function openModal(prayer) {
       return;
     }
   }
+  // Azon reset
+  stopAzonDemo(false);
+
   state.currentModal = prayer;
   const info = PRAYER_NAMES[prayer];
   document.getElementById('modalPrayerName').textContent = `${info.icon} ${info.uz} · ${info.ar}`;
@@ -4019,6 +4052,7 @@ function openModal(prayer) {
 }
 
 function closeModal() {
+  stopAzonDemo(false);
   document.getElementById('statusModal').classList.remove('open');
   state.currentModal = null;
 }
@@ -4823,6 +4857,151 @@ function requestNotifPermission() {
       showToast('Bildirishnomalar rad etildi', 'info');
     }
   });
+}
+
+// ============================================================
+// AZON DEMO — Web Audio API melodiya + matn animatsiyasi
+// ============================================================
+const AZON_PHRASES = [
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [220,196,220,246] },
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [220,196,220,246] },
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [246,261,246,220] },
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [246,261,246,220] },
+  { ar: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ',     dur: 4200, freqs: [196,220,246,261,246,220] },
+  { ar: 'أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ',     dur: 4200, freqs: [196,220,246,261,246,220] },
+  { ar: 'أَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ',     dur: 4200, freqs: [196,220,246,261,220,196] },
+  { ar: 'أَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ',     dur: 4200, freqs: [196,220,246,261,220,196] },
+  { ar: 'حَيَّ عَلَى الصَّلَاةِ',                        dur: 3200, freqs: [220,261,246,220,196] },
+  { ar: 'حَيَّ عَلَى الصَّلَاةِ',                        dur: 3200, freqs: [220,261,246,220,196] },
+  { ar: 'حَيَّ عَلَى الْفَلَاحِ',                        dur: 3200, freqs: [220,261,246,196,174] },
+  { ar: 'حَيَّ عَلَى الْفَلَاحِ',                        dur: 3200, freqs: [220,261,246,196,174] },
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [220,196,174,196] },
+  { ar: 'اللَّهُ أَكْبَرُ',                               dur: 2800, freqs: [220,196,174,196] },
+  { ar: 'لَا إِلَٰهَ إِلَّا اللَّهُ',                    dur: 4000, freqs: [196,174,164,155,164] },
+];
+
+let azonAudioCtx = null;
+let azonNodes = [];
+let azonTimerHandle = null;
+let azonRAF = null;
+let azonRunning = false;
+const azonTotalDur = AZON_PHRASES.reduce((s,p)=>s+p.dur,0);
+
+function playAzonDemo() {
+  if (azonRunning) return;
+  azonRunning = true;
+  document.getElementById('azonPlayIcon').textContent = '🔊';
+  document.getElementById('azonPlayLabel').textContent = 'Ijro etilmoqda...';
+  document.getElementById('azonProgress').style.display = 'block';
+  if (!azonAudioCtx || azonAudioCtx.state === 'closed') {
+    azonAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (azonAudioCtx.state === 'suspended') azonAudioCtx.resume();
+  _azonPhase(0, 0);
+}
+
+function _azonPhase(idx, elapsed) {
+  if (!azonRunning) return;
+  if (idx >= AZON_PHRASES.length) { stopAzonDemo(true); return; }
+
+  const phrase = AZON_PHRASES[idx];
+  const textEl = document.getElementById('azonCurrentText');
+  if (textEl) textEl.textContent = phrase.ar;
+
+  // Nota davomiyligi
+  const stepMs = phrase.dur / phrase.freqs.length;
+  const stepSec = stepMs / 1000;
+  const ctx = azonAudioCtx;
+
+  phrase.freqs.forEach((freq, i) => {
+    const t = ctx.currentTime + i * stepSec;
+
+    // Vibrato
+    const vib = ctx.createOscillator();
+    const vibG = ctx.createGain();
+    vib.frequency.value = 5.5;
+    vibG.gain.value = 3.5;
+    vib.connect(vibG);
+
+    // Main oscillator
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    vibG.connect(osc.frequency);
+
+    // Reverb-like: 2 harmonics at lower volume
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 1.5;
+    const gain2 = ctx.createGain();
+    gain2.gain.value = 0.04;
+    osc2.connect(gain2);
+
+    // Envelope
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.16, t + 0.15);
+    gain.gain.setValueAtTime(0.16, t + stepSec - 0.22);
+    gain.gain.linearRampToValueAtTime(0, t + stepSec);
+
+    osc.connect(gain);
+    gain2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t); vib.start(t); osc2.start(t);
+    osc.stop(t + stepSec); vib.stop(t + stepSec); osc2.stop(t + stepSec);
+    azonNodes.push(osc, gain, vib, vibG, osc2, gain2);
+  });
+
+  // Progress animation
+  const phaseStart = performance.now();
+  function tick() {
+    if (!azonRunning) return;
+    const pe = performance.now() - phaseStart;
+    const totalE = elapsed + pe;
+    const pct = Math.min(100, totalE / azonTotalDur * 100);
+    const secs = Math.floor(totalE / 1000);
+    const barEl = document.getElementById('azonProgressBar');
+    const timerEl = document.getElementById('azonTimer');
+    if (barEl) barEl.style.width = pct + '%';
+    if (timerEl) timerEl.textContent =
+      String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0');
+    if (pe < phrase.dur) azonRAF = requestAnimationFrame(tick);
+  }
+  azonRAF = requestAnimationFrame(tick);
+
+  azonTimerHandle = setTimeout(() => {
+    _azonPhase(idx + 1, elapsed + phrase.dur);
+  }, phrase.dur);
+}
+
+function stopAzonDemo(finished) {
+  azonRunning = false;
+  clearTimeout(azonTimerHandle);
+  cancelAnimationFrame(azonRAF);
+  azonNodes.forEach(n => { try { n.stop && n.stop(0); n.disconnect(); } catch(e){} });
+  azonNodes = [];
+
+  const icon  = document.getElementById('azonPlayIcon');
+  const label = document.getElementById('azonPlayLabel');
+  const prog  = document.getElementById('azonProgress');
+  const bar   = document.getElementById('azonProgressBar');
+
+  if (finished) {
+    if (icon) icon.textContent = '✅';
+    if (label) label.textContent = 'Azon tugadi';
+    setTimeout(() => {
+      if (icon) icon.textContent = '▶️';
+      if (label) label.textContent = 'Azon eshitish';
+      if (prog) prog.style.display = 'none';
+      if (bar) bar.style.width = '0%';
+    }, 2500);
+  } else {
+    if (icon) icon.textContent = '▶️';
+    if (label) label.textContent = 'Azon eshitish';
+    if (prog) prog.style.display = 'none';
+    if (bar) bar.style.width = '0%';
+  }
 }
 
 
