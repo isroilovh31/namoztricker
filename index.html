@@ -3086,8 +3086,6 @@ body { -webkit-overflow-scrolling: touch; }
       </div>
     </div>
 
-    <div class="status-option cancel" onclick="closeSettingsModal()">✕ Yopish</div>
-  </div>
 </div>
 
 <div class="status-modal-overlay" id="statusModal">
@@ -3767,6 +3765,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function bootApp() {
   loadLocalData();
+
+  // Agar foydalanuvchi tizimga kirgan bo'lsa — DB dan ma'lumot yuklaymiz
+  if (state.user && state.user.code) {
+    loadTodayStatusesFromDB(state.user.code).then(() => {
+      renderPrayerTimes();
+      updateActivePrayer();
+      updateDailyScore();
+    });
+    loadQazaFromDB(state.user.code);
+  }
+
   requestLocation();
   startClock();
   generateMockAnalytics();
@@ -3818,41 +3827,115 @@ function updateDate() {
 }
 
 // ============================================================
-// GEOLOCATION
+// GEOLOCATION — aniq koordinat olish
 // ============================================================
 async function requestLocation() {
   if (!navigator.geolocation) {
-    showToast('Geolokatsiya qo\'llab-quvvatlanmaydi', 'error');
-    loadFallbackTimes();
+    await fallbackToIPLocation();
     return;
   }
-  
+
   document.getElementById('locationName').textContent = '📍 Aniqlanmoqda...';
-  
+
+  // Avval saqlangan koordinatlarni ishlatib vaqtlarni ko'rsatamiz
+  const savedLat = localStorage.getItem('lat');
+  const savedLng = localStorage.getItem('lng');
+  if (savedLat && savedLng) {
+    state.location.lat = parseFloat(savedLat);
+    state.location.lng = parseFloat(savedLng);
+    await fetchPrayerTimes(state.location.lat, state.location.lng);
+  }
+
+  // Keyin yangi koordinat so'raymiz
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
-      state.location.lat = pos.coords.latitude;
-      state.location.lng = pos.coords.longitude;
-      
-      localStorage.setItem('lat', state.location.lat);
-      localStorage.setItem('lng', state.location.lng);
-      
-      await fetchPrayerTimes(state.location.lat, state.location.lng);
-      await fetchCityName(state.location.lat, state.location.lng);
+      const newLat = pos.coords.latitude;
+      const newLng = pos.coords.longitude;
+
+      // Agar koordinat juda o'zgarmagan bo'lsa — qayta yuklash shart emas
+      const diff = Math.abs(newLat - state.location.lat) + Math.abs(newLng - state.location.lng);
+      state.location.lat = newLat;
+      state.location.lng = newLng;
+      localStorage.setItem('lat', newLat);
+      localStorage.setItem('lng', newLng);
+
+      // Profil ga ham saqlash
+      if (state.user && state.user.code) {
+        db.from('profiles').update({ lat: newLat, lng: newLng })
+          .eq('user_code', state.user.code).then(() => {});
+      }
+
+      if (diff > 0.01 || !savedLat) {
+        await fetchPrayerTimes(newLat, newLng);
+      }
+      await fetchCityName(newLat, newLng);
     },
-    (err) => {
-      const saved = { lat: localStorage.getItem('lat'), lng: localStorage.getItem('lng') };
-      if (saved.lat && saved.lng) {
-        state.location.lat = parseFloat(saved.lat);
-        state.location.lng = parseFloat(saved.lng);
-        fetchPrayerTimes(state.location.lat, state.location.lng);
+    async (err) => {
+      console.log('Geolocation error:', err.code, err.message);
+      if (savedLat && savedLng) {
+        // Saqlangan koordinat bor — vaqtlar allaqachon yuklangan
+        fetchCityName(state.location.lat, state.location.lng);
       } else {
-        showToast('📍 Joylashuv aniqlashda xato. Saqlangan ma\'lumot ishlatilmoqda', 'info');
-        loadFallbackTimes();
+        // IP orqali joylashuvni aniqlash
+        await fallbackToIPLocation();
       }
     },
-    { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
+    { timeout: 10000, enableHighAccuracy: false, maximumAge: 300000 }
   );
+}
+
+// IP orqali joylashuv aniqlash (ruxsatsiz holatda)
+async function fallbackToIPLocation() {
+  // Supabase profilda saqlangan koordinatlarni tekshiramiz
+  if (state.user && state.user.code) {
+    try {
+      const { data } = await db.from('profiles').select('lat,lng,city').eq('user_code', state.user.code).single();
+      if (data && data.lat && data.lng) {
+        state.location.lat = parseFloat(data.lat);
+        state.location.lng = parseFloat(data.lng);
+        localStorage.setItem('lat', state.location.lat);
+        localStorage.setItem('lng', state.location.lng);
+        if (data.city) {
+          state.location.city = data.city;
+          const el = document.getElementById('locationName');
+          if (el) el.textContent = '📍 ' + data.city;
+        }
+        await fetchPrayerTimes(state.location.lat, state.location.lng);
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // IP geolocation API
+  try {
+    const r = await fetch('https://ipapi.co/json/');
+    const d = await r.json();
+    if (d.latitude && d.longitude) {
+      state.location.lat = d.latitude;
+      state.location.lng = d.longitude;
+      state.location.city = d.city || '';
+      localStorage.setItem('lat', d.latitude);
+      localStorage.setItem('lng', d.longitude);
+      const el = document.getElementById('locationName');
+      if (el) el.textContent = '📍 ' + (d.city || 'Aniq joylashuv yo\'q');
+      await fetchPrayerTimes(d.latitude, d.longitude);
+      // Profilga saqlash
+      if (state.user && state.user.code) {
+        db.from('profiles').update({ lat: d.latitude, lng: d.longitude, city: d.city })
+          .eq('user_code', state.user.code).then(() => {});
+      }
+      return;
+    }
+  } catch(e) {}
+
+  // Oxirgi fallback — Toshkent koordinatlari
+  showToast('📍 Joylashuv aniqlanmadi. Toshkent ma\'lumotlari ishlatilmoqda', 'info');
+  state.location.lat = 41.2995;
+  state.location.lng = 69.2401;
+  state.location.city = 'Toshkent';
+  const el = document.getElementById('locationName');
+  if (el) el.textContent = '📍 Toshkent (taxminiy)';
+  loadFallbackTimes();
 }
 
 async function fetchCityName(lat, lng) {
@@ -3881,35 +3964,42 @@ async function fetchCityName(lat, lng) {
 async function fetchPrayerTimes(lat, lng) {
   try {
     const today = new Date();
-    const dd = String(today.getDate()).padStart(2,'0');
-    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd   = String(today.getDate()).padStart(2,'0');
+    const mm   = String(today.getMonth()+1).padStart(2,'0');
     const yyyy = today.getFullYear();
-    
-    const r = await fetch(`https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=3&school=1`);
+
+    const r = await fetch(
+      `https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${lat}&longitude=${lng}&method=3&school=1`
+    );
     const d = await r.json();
-    
+
     if (d.code === 200) {
       const t = d.data.timings;
+
+      // Vaqtni tozalash — faqat HH:MM qoladi
+      const clean = s => (s || '').replace(/\s*\(.*\)/, '').trim();
+
       state.prayers = {
-        fajr:    t.Fajr,
-        dhuhr:   t.Dhuhr,
-        asr:     t.Asr,
-        maghrib: t.Maghrib,
-        isha:    t.Isha
+        fajr:    clean(t.Fajr),
+        dhuhr:   clean(t.Dhuhr),
+        asr:     clean(t.Asr),
+        maghrib: clean(t.Maghrib),
+        isha:    clean(t.Isha)
       };
-      // Update sunrise/sunset strip
+
       const sunriseEl = document.getElementById('heroSunrise');
       const sunsetEl  = document.getElementById('heroSunset');
-      if (sunriseEl && t.Sunrise) sunriseEl.textContent = t.Sunrise;
-      if (sunsetEl  && t.Sunset)  sunsetEl.textContent  = t.Sunset;
+      if (sunriseEl) sunriseEl.textContent = clean(t.Sunrise);
+      if (sunsetEl)  sunsetEl.textContent  = clean(t.Sunset);
 
       localStorage.setItem('prayers_' + state.today, JSON.stringify(state.prayers));
       renderPrayerTimes();
       updateActivePrayer();
       updateDailyScore();
-      showToast('Namoz vaqtlari yangilandi ✓', 'success');
+      showToast('📍 Namoz vaqtlari yangilandi ✓', 'success');
     }
-  } catch (err) {
+  } catch(err) {
+    console.log('Prayer times fetch error:', err);
     loadFallbackTimes();
   }
 }
@@ -4101,57 +4191,90 @@ function updateCardStatus(prayer, status) {
 // LOCAL DATA MANAGEMENT
 // ============================================================
 function loadLocalData() {
-  // Prayer times cache
+  // Namoz vaqtlari keshi (bugungi)
   const cachedPrayers = localStorage.getItem('prayers_' + state.today);
   if (cachedPrayers) {
-    state.prayers = JSON.parse(cachedPrayers);
-    renderPrayerTimes();
+    try {
+      state.prayers = JSON.parse(cachedPrayers);
+      renderPrayerTimes();
+    } catch(e) {}
   }
-  
-  // Prayer statuses
-  const statuses = localStorage.getItem('status_' + state.today);
-  if (statuses) {
-    const parsed = JSON.parse(statuses);
-    Object.assign(state.statuses, parsed);
-    for (const [p, s] of Object.entries(parsed)) {
-      updateCardStatus(p, s);
+
+  // Statuslar — faqat login bo'lmagan holda localStorage ishlatamiz
+  // (Login bo'lsa bootApp -> loadTodayStatusesFromDB ustma-ust yozadi)
+  if (!state.user || !state.user.code) {
+    const statuses = localStorage.getItem('status_' + state.today);
+    if (statuses) {
+      try {
+        const parsed = JSON.parse(statuses);
+        Object.assign(state.statuses, parsed);
+        for (const [p, s] of Object.entries(parsed)) updateCardStatus(p, s);
+      } catch(e) {}
     }
   }
-  
-  // Qaza balance
+
+  // Qazo balansi (offline kesh)
   const qaza = localStorage.getItem('qaza_balance');
   if (qaza) {
-    state.qaza = JSON.parse(qaza);
-    renderQazaBalance();
+    try {
+      state.qaza = JSON.parse(qaza);
+      renderQazaBalance();
+    } catch(e) {}
   }
 }
 
 function addToSyncQueue(op) {
+  // Offline uchun localStorage ga saqlaymiz
   const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
-  queue.push({ ...op, timestamp: new Date().toISOString(), local_id: Date.now().toString() });
+  queue.push({ ...op, timestamp: new Date().toISOString() });
   localStorage.setItem('sync_queue', JSON.stringify(queue));
-  
-  // Try sync if online
+
+  // Online bo'lsa darhol Supabase ga yozamiz
   if (navigator.onLine) trySyncQueue();
 }
 
 async function trySyncQueue() {
+  if (!state.user || !state.user.code) return;
   const queue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
   if (!queue.length) return;
-  
-  const token = localStorage.getItem('auth_token');
-  if (!token) return;
-  
-  try {
-    const r = await fetch('/api/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ operations: queue })
-    });
-    if (r.ok) {
-      localStorage.setItem('sync_queue', '[]');
+
+  const remaining = [];
+  for (const op of queue) {
+    try {
+      if (op.type === 'mark_prayer') {
+        const p = op.payload;
+        // upsert — mavjud bo'lsa yangilaydi, bo'lmasa yaratadi
+        const { error } = await db.from('daily_prayers').upsert({
+          user_code:    state.user.code,
+          prayer_name:  p.prayer_name,
+          prayer_date:  p.prayer_date,
+          status:       p.status,
+          completed_at: p.completed_at
+        }, { onConflict: 'user_code,prayer_name,prayer_date' });
+        if (error) remaining.push(op);
+      } else if (op.type === 'recover_qaza') {
+        const { error } = await db.rpc('decrement_qaza', {
+          p_user_code: state.user.code,
+          p_prayer:    op.payload.prayer_name
+        });
+        // rpc yo'q bo'lsa — to'g'ridan update
+        if (error) {
+          const { data: bal } = await db.from('qaza_balance')
+            .select(op.payload.prayer_name)
+            .eq('user_code', state.user.code).single();
+          if (bal) {
+            const cur = bal[op.payload.prayer_name] || 0;
+            await db.from('qaza_balance')
+              .update({ [op.payload.prayer_name]: Math.max(0, cur - 1) })
+              .eq('user_code', state.user.code);
+          }
+        }
+      }
+    } catch(e) {
+      remaining.push(op); // offline — keyinroq qayta urinish
     }
-  } catch { }
+  }
+  localStorage.setItem('sync_queue', JSON.stringify(remaining));
 }
 
 window.addEventListener('online', trySyncQueue);
@@ -4954,59 +5077,57 @@ const AZAN_URL = 'https://cdn.islamic.network/prayer-times/audio/makkah/fajr.mp3
 
 function playAzan(prayerName) {
   const today = state.today;
-  // Don't play twice in same day for same prayer
   if (azanState.lastPlayed[prayerName] === today) return;
   azanState.lastPlayed[prayerName] = today;
   localStorage.setItem('azan_played', JSON.stringify(azanState.lastPlayed));
 
   const pInfo = PRAYER_NAMES[prayerName];
-  
-  // Show overlay
-  const overlay = document.getElementById('azanOverlay');
+
+  // Overlay ko'rsatish
+  const overlay  = document.getElementById('azanOverlay');
   const prayerEl = document.getElementById('azanCardPrayer');
-  const iconEl = document.getElementById('azanCardIcon');
+  const iconEl   = document.getElementById('azanCardIcon');
   const statusEl = document.getElementById('azanAudioStatus');
   if (prayerEl) prayerEl.textContent = `${pInfo.icon} ${pInfo.uz} namozi`;
-  if (iconEl) iconEl.textContent = pInfo.icon;
-  if (overlay) overlay.classList.add('show');
+  if (iconEl)   iconEl.textContent   = pInfo.icon;
+  if (overlay)  overlay.classList.add('show');
 
-  // Show azan badge on hero
+  // Hero badge
   const badge = document.getElementById('azanBadge');
   if (badge) badge.classList.add('show');
 
-  // Vibrate pattern (SOS-like)
-  if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
+  // Tebranish
+  if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 600]);
 
-  // Try playing azan audio
-  const audioUrls = [
-    `https://cdn.islamic.network/prayer-times/audio/abdurrahman-as-sudais/${prayerName === 'fajr' ? 'fajr' : 'normal'}.mp3`,
-    'https://www.islamicity.org/multimedia/Sound/Prayer/Adhan-Al-Aqsa.mp3',
-  ];
+  // Toast
+  showToast(`🕌 ${pInfo.uz} namozi vaqti kirdi!`, 'azan', 6000);
 
-  azanState.audio = new Audio();
-  azanState.audio.crossOrigin = 'anonymous';
-  azanState.audio.volume = 0.85;
-  
-  let urlIdx = 0;
-  function tryNextUrl() {
-    if (urlIdx >= audioUrls.length) {
-      if (statusEl) statusEl.textContent = '🔇 Audio yuklanmadi (internet kerak)';
-      return;
+  // Embedded base64 audio ishlatish (har doim ishlaydi)
+  try {
+    if (azanState.audio) {
+      azanState.audio.pause();
+      azanState.audio = null;
     }
-    azanState.audio.src = audioUrls[urlIdx++];
-    azanState.audio.play().then(() => {
-      azanState.playing = true;
-      if (statusEl) statusEl.textContent = '🔊 Azon ijro etilmoqda...';
-    }).catch(() => {
-      tryNextUrl();
+    azanState.audio = new Audio('data:audio/mpeg;base64,' + AZON_B64);
+    azanState.audio.volume = 0.9;
+    azanState.playing = true;
+    if (statusEl) statusEl.textContent = '🔊 Azon ijro etilmoqda...';
+
+    azanState.audio.play().catch(e => {
+      // Autoplay blocked — user interaction kerak
+      if (statusEl) statusEl.textContent = '🔇 Ovoz uchun ekranga bosing';
+      azanState.playing = false;
     });
+
+    azanState.audio.addEventListener('ended', () => {
+      azanState.playing = false;
+      if (statusEl) statusEl.textContent = '✅ Azon tugadi';
+    });
+  } catch(e) {
+    if (statusEl) statusEl.textContent = '🔇 Audio xatosi';
   }
-  tryNextUrl();
 
-  // Show toast too
-  showToast(`🕌 ${pInfo.uz} namozi vaqti kirdi!`, 'azan');
-
-  // Auto close after 3 min
+  // 3 daqiqadan keyin avtomatik yopish
   setTimeout(() => closeAzanOverlay(), 180000);
 }
 
@@ -5022,23 +5143,27 @@ function closeAzanOverlay() {
   }
 }
 
-function checkAzan() {
-  // Load played history
-  try {
-    const saved = JSON.parse(localStorage.getItem('azan_played') || '{}');
-    Object.assign(azanState.lastPlayed, saved);
-  } catch(e) {}
+let _lastAzanCheckMin = -1;
 
-  const now = new Date();
+function checkAzan() {
+  if (!state.prayers || !Object.keys(state.prayers).length) return;
+
+  const now    = new Date();
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const nowSec = now.getSeconds();
-  
-  // Only trigger within 0-59 seconds of prayer time
+
+  // Faqat birinchi 30 soniyada tekshiramiz (ikki marta chaqirmaslik uchun)
+  if (nowSec > 30) return;
+  // Bir xil minutda bir martadan ko'p tekshirmaslik
+  if (_lastAzanCheckMin === nowMin) return;
+  _lastAzanCheckMin = nowMin;
+
   for (const [name, time] of Object.entries(state.prayers)) {
-    if (!time) continue;
+    if (!time || !time.includes(':')) continue;
     const [h, m] = time.split(':').map(Number);
+    if (isNaN(h) || isNaN(m)) continue;
     const pMin = h * 60 + m;
-    if (pMin === nowMin && nowSec < 60) {
+    if (pMin === nowMin) {
       playAzan(name);
     }
   }
@@ -5048,11 +5173,17 @@ function checkAzan() {
 // CLOCK
 // ============================================================
 function startClock() {
+  // Bugungi azon tarixi
+  try {
+    const saved = JSON.parse(localStorage.getItem('azan_played') || '{}');
+    Object.assign(azanState.lastPlayed, saved);
+  } catch(e) {}
+
   updateActivePrayer();
   startLiveClock();
-  checkAzan(); // initial check
-  setInterval(updateActivePrayer, 1000); // Har soniyada yangilash (countdown)
-  setInterval(checkAzan, 1000); // Har soniyada azan tekshirish (aniqlik uchun)
+  checkAzan();
+  setInterval(updateActivePrayer, 1000);
+  setInterval(checkAzan, 1000);
 }
 
 // ============================================================
@@ -5295,23 +5426,28 @@ async function loginWithCode() {
   }
 }
 
-// Bugungi namoz statuslarini DB dan yuklash
 async function loadTodayStatusesFromDB(code) {
   try {
-    const { data } = await db
+    const { data, error } = await db
       .from('daily_prayers')
-      .select('prayer_name, status')
+      .select('prayer_name, status, completed_at')
       .eq('user_code', code)
       .eq('prayer_date', state.today);
+
+    if (error) { console.log('DB status xatosi:', error); return; }
 
     if (data && data.length > 0) {
       const statuses = {};
       data.forEach(p => { statuses[p.prayer_name] = p.status; });
+
+      // State va localStorage ga yozamiz
       Object.assign(state.statuses, statuses);
-      localStorage.setItem('status_' + state.today, JSON.stringify(statuses));
+      localStorage.setItem('status_' + state.today, JSON.stringify(state.statuses));
+
+      // UI yangilash
       for (const [p, s] of Object.entries(statuses)) updateCardStatus(p, s);
     }
-  } catch (e) { console.log('Status yuklash xatosi:', e); }
+  } catch(e) { console.log('Status yuklash xatosi:', e); }
 }
 
 // Qazo balansini DB dan yuklash
