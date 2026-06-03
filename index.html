@@ -3397,11 +3397,11 @@ body { -webkit-overflow-scrolling: touch; }
           </div>
         </div>
       </div>
-      <button class="zikr-btn" id="zikrBtn" onclick="tapZikr()">
+      <button class="zikr-btn" id="zikrBtn" onclick="tapZikrHome()">
         <span class="zikr-btn-ar" id="zikrBtnAr">سُبْحَانَ ٱللَّٰهِ</span>
         <span class="zikr-btn-uz">Bosing</span>
       </button>
-      <button class="zikr-reset" onclick="resetZikr()">↺ Qayta boshlash</button>
+      <button class="zikr-reset" onclick="resetZikrHome()">↺ Qayta boshlash</button>
     </div>
 
     <!-- Qazo Balance -->
@@ -4119,9 +4119,24 @@ function updateActivePrayer() {
 // PRAYER STATUS MODAL
 // ============================================================
 function openModal(prayer) {
-  // Azon reset
-  stopAzonDemo(false);
+  // Namoz vaqtini tekshirish — hali kelmagan bo'lsa bloklash
+  const prayerTime = state.prayers[prayer];
+  if (prayerTime && prayerTime.includes(':')) {
+    const now    = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const [h, m] = prayerTime.split(':').map(Number);
+    const pMin   = h * 60 + m;
+    if (pMin > nowMin) {
+      const diff = pMin - nowMin;
+      const hh   = Math.floor(diff / 60);
+      const mm   = diff % 60;
+      const timeStr = hh > 0 ? `${hh}h ${mm}d` : `${mm} daqiqadan`;
+      showToast(`⏰ ${PRAYER_NAMES[prayer].uz} vaqti ${timeStr} keyin kiradi`, 'info');
+      return;
+    }
+  }
 
+  stopAzonDemo(false);
   state.currentModal = prayer;
   const info = PRAYER_NAMES[prayer];
   document.getElementById('modalPrayerName').textContent = `${info.icon} ${info.uz} · ${info.ar}`;
@@ -4144,34 +4159,59 @@ document.getElementById('settingsModal').addEventListener('click', function(e) {
 function markPrayer(status) {
   const prayer = state.currentModal;
   if (!prayer) return;
-  
+
+  const prevStatus = state.statuses[prayer];
   state.statuses[prayer] = status;
-  
-  // Save to localStorage (offline)
-  const key = `status_${state.today}`;
+
+  // localStorage ga saqlash
+  const key = 'status_' + state.today;
   const saved = JSON.parse(localStorage.getItem(key) || '{}');
   saved[prayer] = status;
   localStorage.setItem(key, JSON.stringify(saved));
-  
-  // Add to offline sync queue
+
+  // QAZO MANTIQI
+  // Oldin missed edi, endi boshqa status → qazoni kamaytirish
+  if (prevStatus === 'missed' && status !== 'missed' && status !== 'pending') {
+    if (state.qaza[prayer] > 0) {
+      state.qaza[prayer]--;
+      localStorage.setItem('qaza_balance', JSON.stringify(state.qaza));
+      saveQazaToDB();
+    }
+  }
+  // Yangi missed → qazoni oshirish
+  if (status === 'missed' && prevStatus !== 'missed') {
+    state.qaza[prayer] = (state.qaza[prayer] || 0) + 1;
+    localStorage.setItem('qaza_balance', JSON.stringify(state.qaza));
+    saveQazaToDB();
+  }
+
+  // Supabase ga to'g'ridan saqlash (savePrayerToDB ham, sync queue ham)
+  savePrayerToDB(prayer, status);
   addToSyncQueue({ type: 'mark_prayer', payload: {
     prayer_name: prayer,
     prayer_date: state.today,
     status,
-    completed_at: status !== 'pending' ? new Date().toISOString() : null
+    completed_at: (status !== 'pending' && status !== 'missed') ? new Date().toISOString() : null
   }});
-  
+
   updateCardStatus(prayer, status);
   closeModal();
-  
-  const msg = status === 'pending' ? 'Bekor qilindi' : `${PRAYER_NAMES[prayer].uz} belgilandi ✓`;
-  showToast(msg, status === 'pending' ? 'info' : 'success');
-  
-  // Haftalik kalendarni yangilash
+
+  const labels = {
+    completed_time:   '✅ Vaqtida o\'qildi',
+    completed_jamaat: '🕌 Jamoat bilan',
+    completed_alone:  '🤲 Yolg\'iz o\'qildi',
+    completed_qaza:   '🔄 Qazo qilindi',
+    missed:           '❌ O\'tkazib yuborildi',
+    pending:          '↩️ Bekor qilindi',
+  };
+  showToast(labels[status] || `${PRAYER_NAMES[prayer].uz} belgilandi`, status === 'missed' ? 'error' : status === 'pending' ? 'info' : 'success');
+
   renderWeekCalendar();
   renderQazaBalance();
   updateActivePrayer();
   updateDailyScore();
+  generateMockAnalytics();
 }
 
 function updateCardStatus(prayer, status) {
@@ -4301,14 +4341,16 @@ function renderQazaBalance() {
 }
 
 function recoverQaza(prayer) {
-  if (!state.qaza[prayer] || state.qaza[prayer] <= 0) return;
-  
+  if (!state.qaza[prayer] || state.qaza[prayer] <= 0) {
+    showToast('Bu namoz uchun qazo yo\'q', 'info');
+    return;
+  }
   state.qaza[prayer]--;
   localStorage.setItem('qaza_balance', JSON.stringify(state.qaza));
-  
+  saveQazaToDB();
   addToSyncQueue({ type: 'recover_qaza', payload: { prayer_name: prayer } });
-  
   renderQazaBalance();
+  renderQazaPage();
   showToast(`${PRAYER_NAMES[prayer].uz} qazosi tiklandi 🤲`, 'success');
 }
 
@@ -4684,44 +4726,46 @@ const zikrState = {
   done: false,
 };
 
-function tapZikr() {
+function tapZikrHome() {
   if (zikrState.done) return;
   zikrState.count++;
-  updateZikrUI();
+  // localStorage ga saqlaymiz
+  const key = 'zikr_home_' + state.today;
+  const d = JSON.parse(localStorage.getItem(key) || '{}');
+  d[zikrState.phrase] = zikrState.count;
+  localStorage.setItem(key, JSON.stringify(d));
 
-  // Vibration
-  if (navigator.vibrate) navigator.vibrate(30);
+  updateZikrUI();
+  if (navigator.vibrate) navigator.vibrate(25);
 
   if (zikrState.count >= zikrState.target) {
     zikrState.done = true;
     showToast(`✅ ${zikrState.phraseLatin} — ${zikrState.target} marta!`, 'success');
-    // Flash effect
     const btn = document.getElementById('zikrBtn');
     if (btn) { btn.style.background = 'var(--green-dim)'; btn.style.borderColor = 'var(--green)'; }
-    setTimeout(() => {
-      if (btn) { btn.style.background = ''; btn.style.borderColor = ''; }
-    }, 1500);
+    setTimeout(() => { if (btn) { btn.style.background = ''; btn.style.borderColor = ''; } }, 1500);
   }
 }
 
 function updateZikrUI() {
-  const cnt = document.getElementById('zikrCount');
+  const cnt   = document.getElementById('zikrCount');
   const denom = document.getElementById('zikrDenom');
-  const ring = document.getElementById('zikrRingFill');
-  if (!cnt || !ring) return;
+  const ring  = document.getElementById('zikrRingFill');
+  if (!cnt) return;
 
   cnt.textContent = zikrState.count;
   if (denom) denom.textContent = '/ ' + zikrState.target;
 
-  // Ring: circumference = 2*pi*52 ≈ 326.7
-  const pct = Math.min(zikrState.count / zikrState.target, 1);
-  const offset = 326.7 * (1 - pct);
-  ring.style.strokeDashoffset = offset;
+  if (ring) {
+    const pct    = Math.min(zikrState.count / zikrState.target, 1);
+    const offset = 326.7 * (1 - pct);
+    ring.style.strokeDashoffset = offset;
+  }
 }
 
-function resetZikr() {
+function resetZikrHome() {
   zikrState.count = 0;
-  zikrState.done = false;
+  zikrState.done  = false;
   updateZikrUI();
   const btn = document.getElementById('zikrBtn');
   if (btn) { btn.style.background = ''; btn.style.borderColor = ''; }
@@ -4729,19 +4773,19 @@ function resetZikr() {
 
 function setZikrTarget(val) {
   zikrState.target = parseInt(val);
-  zikrState.count = 0;
-  zikrState.done = false;
+  zikrState.count  = 0;
+  zikrState.done   = false;
   updateZikrUI();
 }
 
 function selectZikr(el, ar, latin) {
   document.querySelectorAll('.zikr-phrase-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
-  zikrState.phrase = ar;
+  zikrState.phrase      = ar;
   zikrState.phraseLatin = latin;
   const btnAr = document.getElementById('zikrBtnAr');
   if (btnAr) btnAr.textContent = ar;
-  resetZikr();
+  resetZikrHome();
 }
 
 // ============================================================
@@ -4757,8 +4801,14 @@ function showPage(page) {
   } else if (page === 'analytics') {
     document.getElementById('analyticsPage').classList.add('active');
     document.getElementById('navAnalytics').classList.add('active');
-    renderContributionGraph('week');
-    // Reset period tabs
+    // DB dan oxirgi 30 kun statuslarini yuklab keyin render qilamiz
+    if (state.user && state.user.code) {
+      loadRecentStatusesFromDB(state.user.code, 30).then(() => {
+        renderContributionGraph('week');
+      });
+    } else {
+      renderContributionGraph('week');
+    }
     document.querySelectorAll('.period-tab').forEach((t,i) => t.classList.toggle('active', i===0));
   } else if (page === 'qaza') {
     document.getElementById('qazaPage').classList.add('active');
@@ -5424,6 +5474,46 @@ async function loginWithCode() {
     btn.disabled = false;
     btn.textContent = 'Kirish →';
   }
+}
+
+// So'nggi N kun statuslarini DB dan yuklab localStorage ga saqlaymiz
+async function loadRecentStatusesFromDB(code, days) {
+  try {
+    const from = new Date();
+    from.setDate(from.getDate() - days + 1);
+    from.setHours(0,0,0,0);
+    const fromStr = from.toISOString().split('T')[0];
+
+    const { data, error } = await db
+      .from('daily_prayers')
+      .select('prayer_name, status, prayer_date')
+      .eq('user_code', code)
+      .gte('prayer_date', fromStr)
+      .order('prayer_date', { ascending: true });
+
+    if (error || !data) return;
+
+    // Kunlar bo'yicha guruhlash va localStorage ga saqlash
+    const byDate = {};
+    data.forEach(r => {
+      if (!byDate[r.prayer_date]) byDate[r.prayer_date] = {};
+      byDate[r.prayer_date][r.prayer_name] = r.status;
+    });
+
+    for (const [date, statuses] of Object.entries(byDate)) {
+      const existing = JSON.parse(localStorage.getItem('status_' + date) || '{}');
+      // DB ustunvor — ustiga yozamiz
+      const merged = { ...existing, ...statuses };
+      localStorage.setItem('status_' + date, JSON.stringify(merged));
+    }
+
+    // Bugungi statuslarni state ga ham olib o'tamiz
+    if (byDate[state.today]) {
+      Object.assign(state.statuses, byDate[state.today]);
+      for (const [p, s] of Object.entries(byDate[state.today])) updateCardStatus(p, s);
+      updateDailyScore();
+    }
+  } catch(e) { console.log('Recent statuses error:', e); }
 }
 
 async function loadTodayStatusesFromDB(code) {
